@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { UiService } from 'src/app/services/ui.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-footer-content',
@@ -8,9 +10,17 @@ import { Component, OnInit } from '@angular/core';
 export class FooterContentComponent implements OnInit {
 
   width: string = window.innerWidth/2+"px";
+  height: string = window.innerHeight*0.25+"px";
   buyCallActive: boolean = false;
+  subscription: Subscription;
+  
 
-  constructor() { }
+  constructor(private uiService: UiService) {
+    this.subscription = this.uiService
+      .onToggle()
+      .subscribe((value) => {this.buyCallActive = value;});
+  }
+
 
   ngOnInit(): void {
     console.log("width: " + this.width);
@@ -18,8 +28,8 @@ export class FooterContentComponent implements OnInit {
   }
 
   onBuyCall() {
-    this.buyCallActive = !this.buyCallActive;
-    alert("onBuyCall");
+    this.uiService.toggleSetupBuyCall();
+    
   }
 
 }

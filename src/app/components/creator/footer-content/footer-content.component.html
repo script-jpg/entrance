@@ -1,9 +1,14 @@
-<div id="footer-content" [ngStyle]="{'width': width}">
-  <div class="profile">
-    <img class="pfp" src="../../../../assets/pfp.jpg" alt="profile image">
-    <p class="username">Username</p>
- </div>
+<div class="footer" [ngStyle]="{'width': width}">
+  <div id="footer-content" >
+    <div class="profile">
+      <img class="pfp" src="../../../../assets/pfp.jpg" alt="profile image">
+      <p class="username">Username</p>
+   </div>
+    
+    <app-button (clickEvent)="onBuyCall()"></app-button>
   
-  <app-button (clickEvent)="onBuyCall()"></app-button>
+  </div>
+  <app-setup-buy-call *ngIf="buyCallActive"  [ngStyle]="{'height': height, 'width':width}"></app-setup-buy-call>
 
 </div>
+

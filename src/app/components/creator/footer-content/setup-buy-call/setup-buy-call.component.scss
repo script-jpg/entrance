@@ -1,0 +1,9 @@
+.container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+nb-progress-bar {
+  flex: 1;
+}

@@ -5,13 +5,13 @@
   </nb-layout-header>
 
   <nb-layout-column style="padding-left: 0px;padding-right: 0px;padding-bottom: 0px;padding-top: 0px;">
-    <iframe id="stream-embed" src="https://player.twitch.tv/?channel=saurei&parent=localhost" frameborder="0" allowfullscreen="true" scrolling="no" height="100%" width="100%"></iframe>
+    <iframe id="stream-embed" src="" frameborder="0" allowfullscreen="true" scrolling="no" height="100%" width="100%"></iframe>
 
   </nb-layout-column>
 
-  <nb-layout-footer fixed>
+  <nb-layout-footer [ngStyle]="{'height': buyCallActive ? '50%' : '21%' }">
     <app-footer-content></app-footer-content>
-
+    
   <!-- Insert footer here -->
   </nb-layout-footer>
 
