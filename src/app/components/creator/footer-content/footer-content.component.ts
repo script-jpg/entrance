@@ -7,13 +7,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FooterContentComponent implements OnInit {
 
-  width = window.innerWidth/2+"px";
+  width: string = window.innerWidth/2+"px";
+  buyCallActive: boolean = false;
 
   constructor() { }
 
   ngOnInit(): void {
     console.log("width: " + this.width);
 
+  }
+
+  onBuyCall() {
+    this.buyCallActive = !this.buyCallActive;
+    alert("onBuyCall");
   }
 
 }
