@@ -6,10 +6,14 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NbThemeModule, NbLayoutModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
-
+import { FooterContentComponent } from './components/creator/footer-content/footer-content.component';
+import { ButtonComponent } from './components/button/button.component';
+import { NbButtonModule } from '@nebular/theme';
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    FooterContentComponent,
+    ButtonComponent
   ],
   imports: [
     BrowserModule,
@@ -17,7 +21,8 @@ import { NbEvaIconsModule } from '@nebular/eva-icons';
     BrowserAnimationsModule,
     NbThemeModule.forRoot({ name: 'cosmic' }),
     NbLayoutModule,
-    NbEvaIconsModule
+    NbEvaIconsModule,
+    NbButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]
