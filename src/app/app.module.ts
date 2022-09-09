@@ -9,11 +9,13 @@ import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { FooterContentComponent } from './components/creator/footer-content/footer-content.component';
 import { ButtonComponent } from './components/button/button.component';
 import { NbButtonModule } from '@nebular/theme';
+import { SetupBuyCallComponent } from './components/creator/footer-content/setup-buy-call/setup-buy-call.component';
 @NgModule({
   declarations: [
     AppComponent,
     FooterContentComponent,
-    ButtonComponent
+    ButtonComponent,
+    SetupBuyCallComponent
   ],
   imports: [
     BrowserModule,
