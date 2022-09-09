@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Output, EventEmitter } from '@angular/core';
+import { Output, Input, EventEmitter } from '@angular/core';
 
 
 @Component({
@@ -9,6 +9,7 @@ import { Output, EventEmitter } from '@angular/core';
 })
 export class ButtonComponent implements OnInit {
   @Output() clickEvent = new EventEmitter();
+  @Input() text: string = "";
 
   constructor() { }
 

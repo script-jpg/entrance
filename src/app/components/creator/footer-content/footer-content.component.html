@@ -5,7 +5,7 @@
       <p class="username">Username</p>
    </div>
     
-    <app-button (clickEvent)="onBuyCall()"></app-button>
+    <app-button (clickEvent)="onBuyCall()" text="Buy Call"></app-button>
   
   </div>
   <app-setup-buy-call *ngIf="buyCallActive"  [ngStyle]="{'height': height, 'width':width}"></app-setup-buy-call>

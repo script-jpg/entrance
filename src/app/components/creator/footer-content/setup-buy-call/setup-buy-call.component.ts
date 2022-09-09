@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+const perMinCost: number = 30;
 @Component({
   selector: 'app-setup-buy-call',
   templateUrl: './setup-buy-call.component.html',
@@ -12,6 +12,17 @@ export class SetupBuyCallComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  value = 25;
+  cost: number = perMinCost;
+  minutes: number = 1;
+
+
+  pitch(event: any) {
+    this.cost = event.value * perMinCost;
+    this.minutes = event.value;
+  }
+
+  onConfirmBuyCall() {
+
+  }
 
 }
