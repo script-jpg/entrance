@@ -6,17 +6,32 @@ import { Observable, Subject } from 'rxjs';
 })
 export class UiService {
   private buyCallActive: boolean = false;
-  private subject = new Subject<any>();
+  private isHoveringOnFooter: boolean = false;
+  private BuyCallSubject = new Subject<any>();
+  private hoverSubject = new Subject<any>();
 
   toggleSetupBuyCall(): void {
     this.buyCallActive = !this.buyCallActive;
-    this.subject.next(this.buyCallActive);
+    this.BuyCallSubject.next(this.buyCallActive);
   }
+
+  hoverOnFooter(): void {
+    this.isHoveringOnFooter = !this.isHoveringOnFooter;
+    //console.log("hovering on footer: " + this.isHoveringOnFooter);
+    this.hoverSubject.next(this.isHoveringOnFooter);
+  }
+
+
   constructor() { 
    
   }
 
+
   onToggle(): Observable<any> {
-    return this.subject.asObservable();
+    return this.BuyCallSubject.asObservable();
+  }
+
+  onHoverFooter(): Observable<any> {
+    return this.hoverSubject.asObservable();
   }
 }

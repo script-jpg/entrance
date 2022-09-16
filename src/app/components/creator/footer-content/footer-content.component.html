@@ -1,14 +1,21 @@
-<div class="footer" [ngStyle]="{'width': width}">
-  <div id="footer-content" >
-    <div class="profile">
-      <img class="pfp" src="../../../../assets/pfp.jpg" alt="profile image">
-      <p class="username">Username</p>
-   </div>
-    
-    <app-button (clickEvent)="onBuyCall()" text="Buy Call"></app-button>
-  
+<div class="footer" [ngStyle]="{'width': width}" 
+>
+  <div class="footer-content" *ngIf="!isHoveringOnFooter || isLoggedIn">
+
+      <div class="profile">
+        <img class="pfp" src="../../../../assets/pfp.jpg" alt="profile image">
+        <p class="username">Username</p>
+     </div>
+      
+      <app-button (clickEvent)="onBuyCall()" text="Buy Call"></app-button>
+      
   </div>
+  <app-button (clickEvent)="onLogin()" text="sign in to buy call" *ngIf="isHoveringOnFooter && !isLoggedIn"></app-button>
+  
   <app-setup-buy-call *ngIf="buyCallActive"  [ngStyle]="{'height': height, 'width':width}"></app-setup-buy-call>
 
+  
+
 </div>
+
 

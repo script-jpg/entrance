@@ -9,8 +9,9 @@
 
   </nb-layout-column>
 
-  <nb-layout-footer [ngStyle]="{'height': buyCallActive ? '50%' : '21%' }">
-    <app-footer-content></app-footer-content>
+  <nb-layout-footer [ngStyle]="{'height': buyCallActive ? '50%' : '21%' }"
+  (mouseover)="setIsHoverOnFooter()" (mouseout)="setNotHoverOnFooter()">
+    <app-footer-content [isHoveringOnFooter]="isHoverOnFooter"></app-footer-content>
     
   <!-- Insert footer here -->
   </nb-layout-footer>
