@@ -9,7 +9,6 @@ import { Subscription } from 'rxjs';
 })
 export class FooterContentComponent implements OnInit {
 
-  width: string = window.innerWidth/2+"px";
   height: string = window.innerHeight*0.25+"px";
   buyCallActive: boolean = false;
   subscription: Subscription;
@@ -25,7 +24,6 @@ export class FooterContentComponent implements OnInit {
 
 
   ngOnInit(): void {
-    console.log("width: " + this.width);
 
   }
 
