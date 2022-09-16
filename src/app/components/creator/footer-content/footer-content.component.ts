@@ -13,7 +13,7 @@ export class FooterContentComponent implements OnInit {
   buyCallActive: boolean = false;
   subscription: Subscription;
   @Input() isHoveringOnFooter: boolean = false;
-  isLoggedIn: boolean = false;
+  isLoggedIn: boolean = true;
 
   constructor(private uiService: UiService) {
     this.subscription = this.uiService
