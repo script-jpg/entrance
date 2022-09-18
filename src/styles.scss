@@ -22,7 +22,3 @@ nav {
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-#logo:hover {
-  transition: transform 1.5s;
-  transform: rotateY(360deg);
-}

@@ -16,6 +16,7 @@ export class FooterContentComponent implements OnInit {
   subscription: Subscription;
   @Input() isHoveringOnFooter: boolean = false;
   isLoggedIn: boolean = false;
+  isSigningIn: boolean = false;
 
   constructor(private uiService: UiService, 
     private dialogService: NbDialogService,
@@ -37,14 +38,13 @@ export class FooterContentComponent implements OnInit {
   }
 
   protected open(closeOnEsc: boolean) {
-    this.dialogService.open(AuthModalComponent, { closeOnEsc }).onClose.subscribe(() => this.isHoveringOnFooter = false);
-    setTimeout(() => {
-      this.isHoveringOnFooter = true;
-    }, 10);
+    this.dialogService.open(AuthModalComponent, { closeOnEsc }).onClose.subscribe(() => this.isSigningIn = false);
+    
 
   }
 
   onLogin() {
+    this.isSigningIn = true;
     this.open(true);
   }
     

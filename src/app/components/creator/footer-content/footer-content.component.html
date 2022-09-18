@@ -1,6 +1,6 @@
 <div class="footer">
 
-  <div class="footer-content" *ngIf="!isHoveringOnFooter || isLoggedIn">
+  <div class="footer-content" *ngIf="(!isHoveringOnFooter || isLoggedIn) && !isSigningIn">
 
       <div class="profile">
         <img class="pfp" src="../../../../assets/pfp.jpg" alt="profile image">
