@@ -9,8 +9,17 @@ app-footer-content {
   width: 100%;
 }
 
+nb-dialog-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  width: 100%;
+  background-color: #323259;
+
+}
+
 #logo:hover {
   transition: transform 1.5s;
   transform: rotateY(360deg);
 }
-

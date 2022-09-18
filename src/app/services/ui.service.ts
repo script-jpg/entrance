@@ -32,6 +32,6 @@ export class UiService {
   }
 
   onHoverFooter(): Observable<any> {
-    return this.hoverSubject.asObservable();
+    return this.hoverSubject;
   }
 }
