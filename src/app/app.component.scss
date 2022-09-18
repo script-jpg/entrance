@@ -8,3 +8,9 @@ app-footer-content {
   justify-content: center;
   width: 100%;
 }
+
+#logo:hover {
+  transition: transform 1.5s;
+  transform: rotateY(360deg);
+}
+
