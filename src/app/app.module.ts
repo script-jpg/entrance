@@ -12,6 +12,8 @@ import { NbButtonModule } from '@nebular/theme';
 import { SetupBuyCallComponent } from './components/creator/footer-content/setup-buy-call/setup-buy-call.component';
 import { MatSliderModule } from '@angular/material/slider';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
+import { HttpClientModule } from '@angular/common/http';
+import { OAuthModule } from 'angular-oauth2-oidc';
 
 
 @NgModule({
@@ -32,6 +34,8 @@ import { AuthModalComponent } from './components/auth-modal/auth-modal.component
     NbButtonModule,
     MatSliderModule,
     NbDialogModule.forRoot(),
+    OAuthModule.forRoot(),
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
