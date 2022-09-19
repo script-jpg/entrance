@@ -5,6 +5,7 @@
     <div id="animation-wrapper">
       <img id="logo" src="assets/logo.png" alt="logo" style="width: 50px; height: 50px;">
     </div>
+    <app-button (clickEvent)="logOut()" text="Log Out"></app-button>
     
   </nb-layout-header>
 
@@ -15,6 +16,7 @@
 
   <nb-layout-footer [ngStyle]="{'height': buyCallActive ? '50%' : '21%' }"
   (mouseover)="setIsHoverOnFooter()" (mouseout)="setNotHoverOnFooter()">
+    <div *ngIf="isNewUser">I am a new user!</div>
     <app-footer-content [isHoveringOnFooter]="isHoverOnFooter"></app-footer-content>
     
   <!-- Insert footer here -->

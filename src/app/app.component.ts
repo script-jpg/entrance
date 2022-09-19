@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UiService } from 'src/app/services/ui.service';
 import { Subscription } from 'rxjs';
-
+import { HttpClient } from '@angular/common/http';
+import { GraphqlService } from './services/graphql.service';
+import { GoogleApiService } from './services/google-api.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -12,12 +14,34 @@ export class AppComponent {
   buyCallActive: boolean = false;
   isHoverOnFooter: boolean = false;
   isLoggedIn: boolean = false;
+  graphql: GraphqlService;
+  googleApi: GoogleApiService;
+  isNewUser: boolean = false;
 
-  constructor(private uiService: UiService) {
+  constructor(private uiService: UiService, graphql: GraphqlService, googleApi: GoogleApiService) {
+    this.graphql = graphql;
+    this.googleApi = googleApi;
+    googleApi.authenticate("app");
+    googleApi.userProfileSubject.subscribe((userProfile) => {
+      const user_id = userProfile.info.sub;
+      console.log("user_id: " + user_id);
+      graphql.isNewUser(user_id).then((value) => {
+        this.isNewUser = value;
+      });
+      
+    });
+    
+    console.log("hi");
     this.subscription = this.uiService.onToggle().subscribe((value) => {
       this.buyCallActive = value;
     });
+    
   }
+
+  logOut(): void {
+    this.googleApi.signOut();
+  }
+
 
   setIsHoverOnFooter(): void {
     this.isHoverOnFooter = true;

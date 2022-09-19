@@ -3,6 +3,7 @@ import { UiService } from 'src/app/services/ui.service';
 import { Subscription } from 'rxjs';
 import { NbDialogRef, NbDialogService } from '@nebular/theme';
 import { AuthModalComponent } from '../../auth-modal/auth-modal.component';
+import { GoogleApiService } from 'src/app/services/google-api.service';
 
 @Component({
   selector: 'app-footer-content',
@@ -20,10 +21,17 @@ export class FooterContentComponent implements OnInit {
 
   constructor(private uiService: UiService, 
     private dialogService: NbDialogService,
-    @Optional() private nbdialogRef: NbDialogRef<AuthModalComponent>) {
+    @Optional() private nbdialogRef: NbDialogRef<AuthModalComponent>,
+    googleApi: GoogleApiService) {
     this.subscription = this.uiService
       .onToggle()
       .subscribe((value) => {this.buyCallActive = value;});
+    
+    // update isLoggedIn when userProfile is recieved
+    googleApi.userProfileSubject.subscribe((userProfile) => {
+      this.isLoggedIn = userProfile.info != null;
+      console.log("isLoggedIn: " + this.isLoggedIn);
+    });
   }
 
 
