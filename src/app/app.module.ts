@@ -14,6 +14,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
 import { HttpClientModule } from '@angular/common/http';
 import { OAuthModule } from 'angular-oauth2-oidc';
+import { OnboardModalComponent } from './components/onboard-modal/onboard-modal.component';
 
 
 @NgModule({
@@ -23,6 +24,7 @@ import { OAuthModule } from 'angular-oauth2-oidc';
     ButtonComponent,
     SetupBuyCallComponent,
     AuthModalComponent,
+    OnboardModalComponent,
   ],
   imports: [
     BrowserModule,

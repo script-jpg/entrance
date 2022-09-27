@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
 import { Observable, Subject } from 'rxjs';
-import googleAuthId from '../../googleAuthId.json'; // This import style requires "esModuleInterop", see "side notes"
+import client from '../OAuth2GoogleInfo.json';
 
 
 const authCodeFlowConfig: AuthConfig = {
@@ -17,7 +17,7 @@ const authCodeFlowConfig: AuthConfig = {
 
   // The SPA's id. The SPA is registerd with this id at the auth-server
   // clientId: 'server.code',
-  clientId: googleAuthId.web.client_id,
+  clientId: client.web.client_id,
 
   // set the scope for the permissions the client should request
   scope: 'openid profile email https://www.googleapis.com/auth/gmail.readonly',
