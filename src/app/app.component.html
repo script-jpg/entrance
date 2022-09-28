@@ -16,7 +16,6 @@
 
   <nb-layout-footer [ngStyle]="{'height': buyCallActive ? '50%' : '21%' }"
   (mouseover)="setIsHoverOnFooter()" (mouseout)="setNotHoverOnFooter()">
-    <div *ngIf="isNewUser">I am a new user!</div>
     <app-footer-content [isHoveringOnFooter]="isHoverOnFooter"></app-footer-content>
     
   <!-- Insert footer here -->

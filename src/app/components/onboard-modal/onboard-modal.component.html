@@ -1,1 +1,34 @@
-<p>onboard-modal works!</p>
+<div class="body">
+    
+
+    <form #userName="ngForm" (ngSubmit)="onClickSubmit(userName.value)"> 
+        <!--  -->
+        <div class="choose_file" [ngStyle]="{'background-image': this.filePreview !== '' ? 'url(' + this.filePreview + ')' : '', 'background-size': 'cover' }">
+            <img src="../../../assets/camera-solid.svg" alt="select profile image" id="profilePreview">
+            <input #imageInput
+            type="file"
+            accept="image/*"
+            (change)="processFile(imageInput)" placeholder="pfp" id="imageInput">
+            
+        </div>
+    
+        
+    
+        
+
+        <input type="text" nbInput name="username" placeholder="username" ngModel> 
+
+        <button nbButton>Submit <input type="submit" style="display:none" value="submit"> </button>
+        
+     </form>
+
+
+
+    
+  
+  
+  </div>
+  
+  
+  
+  

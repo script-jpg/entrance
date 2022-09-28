@@ -15,7 +15,8 @@ import { AuthModalComponent } from './components/auth-modal/auth-modal.component
 import { HttpClientModule } from '@angular/common/http';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { OnboardModalComponent } from './components/onboard-modal/onboard-modal.component';
-
+import { FormsModule } from '@angular/forms';
+import { NbInputModule } from '@nebular/theme';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,9 @@ import { OnboardModalComponent } from './components/onboard-modal/onboard-modal.
     MatSliderModule,
     NbDialogModule.forRoot(),
     OAuthModule.forRoot(),
-    HttpClientModule
+    HttpClientModule,
+    FormsModule,
+    NbInputModule
   ],
   providers: [],
   bootstrap: [AppComponent]

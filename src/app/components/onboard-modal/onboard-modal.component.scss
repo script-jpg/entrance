@@ -1,0 +1,79 @@
+
+  
+  .body {
+    height: 90%;
+    border-radius: 20px;
+    padding: 50px;
+    background-color: #323259;
+    text-align: center;
+  }
+
+
+  
+  .button-holder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dot {
+    height: 25vh;
+    width: 25vh;
+    background-color: #fff;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  #imageInput {
+    height: 25vh;
+    width: 25vh;
+    border-radius:50%;
+    cursor: pointer;
+    
+  }
+  
+  .choose_file{
+    position:relative;
+    display:flex;    
+    border-radius:50%;
+    height: 25vh;
+    width: 25vh;
+    padding: 4px 6px 4px 8px;
+    font: normal 14px Myriad Pro, Verdana, Geneva, sans-serif;
+
+    
+    background:white;
+
+    justify-content: center;
+    align-items: center;
+    
+}
+.choose_file input[type="file"]{
+    -webkit-appearance:none; 
+    position:absolute;
+    top:0; left:0;
+    opacity:0; 
+}
+
+.choose_file:hover{
+    #profilePreview {
+        opacity: 0.5;
+
+    }
+    
+}
+
+#profilePreview {
+    opacity: 0;
+    width: 10vh;
+    height: 10vh;
+}
+
+
+form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 1.5rem;
+}

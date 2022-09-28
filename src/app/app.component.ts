@@ -4,6 +4,8 @@ import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { GraphqlService } from './services/graphql.service';
 import { GoogleApiService } from './services/google-api.service';
+import { NbDialogService, NbDialogConfig } from '@nebular/theme';
+import { OnboardModalComponent } from './components/onboard-modal/onboard-modal.component';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -18,16 +20,22 @@ export class AppComponent {
   googleApi: GoogleApiService;
   isNewUser: boolean = false;
 
-  constructor(private uiService: UiService, graphql: GraphqlService, googleApi: GoogleApiService) {
-    this.graphql = graphql;
-    this.googleApi = googleApi;
-    googleApi.authenticate("app");
-    googleApi.userProfileSubject.subscribe((userProfile) => {
-      const user_id = userProfile.info.sub;
-      console.log("user_id: " + user_id);
-      graphql.isNewUser(user_id).then((value) => {
-        this.isNewUser = value;
-      });
+  constructor(private uiService: UiService, graphql: GraphqlService, 
+    googleApi: GoogleApiService, 
+    private dialogService: NbDialogService) {
+    // nbDialogConfig: NbDialogConfig) {
+      // nbDialogConfig.closeOnBackdropClick = false;
+
+      this.graphql = graphql;
+      this.googleApi = googleApi;
+      googleApi.authenticate("app");
+      googleApi.userProfileSubject.subscribe((userProfile) => {
+        const user_id = userProfile.info.sub;
+        console.log("user_id: " + user_id);
+        graphql.isNewUser(user_id).then((value) => {
+          this.isNewUser = value;
+          this.open(false);
+        });
       
     });
     
@@ -36,6 +44,11 @@ export class AppComponent {
       this.buyCallActive = value;
     });
     
+  }
+
+  protected open(closeOnEsc: boolean) {
+    this.dialogService.open(OnboardModalComponent, { closeOnEsc })
+
   }
 
   logOut(): void {

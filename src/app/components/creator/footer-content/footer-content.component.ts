@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Optional } from '@angular/core';
 import { UiService } from 'src/app/services/ui.service';
 import { Subscription } from 'rxjs';
-import { NbDialogRef, NbDialogService } from '@nebular/theme';
+import { NbDialogService } from '@nebular/theme';
 import { AuthModalComponent } from '../../auth-modal/auth-modal.component';
 import { GoogleApiService } from 'src/app/services/google-api.service';
 
@@ -21,7 +21,7 @@ export class FooterContentComponent implements OnInit {
 
   constructor(private uiService: UiService, 
     private dialogService: NbDialogService,
-    @Optional() private nbdialogRef: NbDialogRef<AuthModalComponent>,
+
     googleApi: GoogleApiService) {
     this.subscription = this.uiService
       .onToggle()
