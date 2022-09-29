@@ -45,6 +45,10 @@ export class GoogleApiService {
 
   userProfileSubject = new Subject<UserInfo>()
 
+  
+
+  public userInfo: UserInfo | null = null;
+
   constructor(oAuthService: OAuthService, httpClient: HttpClient) {
     this.oAuthService = oAuthService;
     this.httpClient = httpClient;
@@ -86,6 +90,7 @@ export class GoogleApiService {
     if (this.oAuthService.hasValidAccessToken()) {
       this.oAuthService.loadUserProfile().then( (userProfile) => {
         console.log(userProfile as UserInfo)
+        sessionStorage.setItem('userProfile', JSON.stringify(userProfile as UserInfo))
         this.userProfileSubject.next(userProfile as UserInfo)
       })
     }

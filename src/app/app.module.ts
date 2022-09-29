@@ -8,7 +8,7 @@ import { NbThemeModule, NbLayoutModule, NbDialogModule, NbDialogService, NbDialo
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { FooterContentComponent } from './components/creator/footer-content/footer-content.component';
 import { ButtonComponent } from './components/button/button.component';
-import { NbButtonModule } from '@nebular/theme';
+import { NbButtonModule, NbInputModule, NbCheckboxModule } from '@nebular/theme';
 import { SetupBuyCallComponent } from './components/creator/footer-content/setup-buy-call/setup-buy-call.component';
 import { MatSliderModule } from '@angular/material/slider';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
@@ -16,7 +16,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { OnboardModalComponent } from './components/onboard-modal/onboard-modal.component';
 import { FormsModule } from '@angular/forms';
-import { NbInputModule } from '@nebular/theme';
+
+
 
 @NgModule({
   declarations: [
@@ -40,9 +41,12 @@ import { NbInputModule } from '@nebular/theme';
     OAuthModule.forRoot(),
     HttpClientModule,
     FormsModule,
-    NbInputModule
+    NbInputModule,
+    NbCheckboxModule
   ],
-  providers: [],
+  providers: [
+    
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

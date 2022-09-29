@@ -34,7 +34,10 @@ export class AppComponent {
         console.log("user_id: " + user_id);
         graphql.isNewUser(user_id).then((value) => {
           this.isNewUser = value;
-          this.open(false);
+          console.log("isNewUser: " + this.isNewUser);
+          if (this.isNewUser) {
+            this.open(true);
+          }
         });
       
     });

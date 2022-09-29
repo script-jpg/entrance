@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {GraphqlService} from '../../services/graphql.service';
 
 @Component({
   selector: 'app-onboard-modal',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class OnboardModalComponent implements OnInit {
 
-  constructor() { }
+  constructor(private graphqlService: GraphqlService) { }
 
   ngOnInit(): void {
   }
@@ -16,13 +17,25 @@ export class OnboardModalComponent implements OnInit {
 
   filePreview: string = "";
 
+  isStreamer = false;
+
+  toggleStreamer(isStreamer: boolean) {
+    this.isStreamer = isStreamer;
+  }
+
   onClickSubmit(result: any) {
-    console.log("You have entered : " + result.username + " " + result.password); 
-    console.log(result.pfp);
+    console.log("You have entered : " + result.username); 
+    console.log("isStreamer : " + this.isStreamer);
+    console.log("file undefined? : " + (this.file === undefined));
+    this.graphqlService.addNewUser(result.username, this.isStreamer, this.file, 1).then((value) => {
+      console.log("success: " + value);
+    });
  }
 
  processFile(imageInput: any) {
-  const file: File = imageInput.files[0];
+  const file = imageInput.files[0];
+  this.file = file;
+  console.log("file: "+this.file);
   const reader = new FileReader();
 
   reader.addEventListener('load', (event: any) => {
@@ -30,7 +43,7 @@ export class OnboardModalComponent implements OnInit {
     console.log(typeof event.target.result);
     console.log("event.target.result: "+event.target.result);
     this.filePreview = event.target.result;
-    console.log("file: "+file);
+    
 
     // this.selectedFile = new ImageSnippet(event.target.result, file);
 
@@ -42,8 +55,8 @@ export class OnboardModalComponent implements OnInit {
       
     //   })
   });
-
   reader.readAsDataURL(file);
+
 }
 
 }

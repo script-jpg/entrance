@@ -3,7 +3,7 @@ import { UiService } from 'src/app/services/ui.service';
 import { Subscription } from 'rxjs';
 import { NbDialogService } from '@nebular/theme';
 import { AuthModalComponent } from '../../auth-modal/auth-modal.component';
-import { GoogleApiService } from 'src/app/services/google-api.service';
+import { GoogleApiService, UserInfo } from 'src/app/services/google-api.service';
 
 @Component({
   selector: 'app-footer-content',
@@ -33,6 +33,8 @@ export class FooterContentComponent implements OnInit {
       console.log("isLoggedIn: " + this.isLoggedIn);
     });
   }
+
+
 
 
 

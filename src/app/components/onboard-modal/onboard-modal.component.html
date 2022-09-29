@@ -12,11 +12,9 @@
             
         </div>
     
-        
-    
-        
-
         <input type="text" nbInput name="username" placeholder="username" ngModel> 
+
+        <nb-checkbox (checkedChange)="toggleStreamer($event)">Are you a streamer? 🚀</nb-checkbox>
 
         <button nbButton>Submit <input type="submit" style="display:none" value="submit"> </button>
         
