@@ -3,8 +3,8 @@
   <div class="footer-content" *ngIf="(!isHoveringOnFooter || isLoggedIn) && !isSigningIn">
 
       <div class="profile">
-        <img class="pfp" src="../../../../assets/pfp.jpg" alt="profile image">
-        <p class="username">Username</p>
+        <img class="pfp" [src]="streamerData?.profile_pic" alt="profile image">
+        <p class="username">{{streamerData?.username}}</p>
      </div>
       
       <app-button (clickEvent)="onBuyCall()" text="Buy Call"></app-button>

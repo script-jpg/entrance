@@ -41,7 +41,6 @@ export class GoogleApiService {
   oAuthService: OAuthService;
   httpClient: HttpClient;
 
-  gmail = 'https://gmail.googleapis.com'
 
   userProfileSubject = new Subject<UserInfo>()
 

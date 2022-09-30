@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { NbDialogService, NbDialogRef } from '@nebular/theme';
 import { AuthModalComponent } from '../../auth-modal/auth-modal.component';
 import { GoogleApiService, UserInfo } from 'src/app/services/google-api.service';
+import { GraphqlService, User } from 'src/app/services/graphql.service';
 
 @Component({
   selector: 'app-footer-content',
@@ -11,6 +12,7 @@ import { GoogleApiService, UserInfo } from 'src/app/services/google-api.service'
   styleUrls: ['./footer-content.component.scss']
 })
 export class FooterContentComponent implements OnInit {
+  @Input() creator_id: string = "";
 
   height: string = window.innerHeight*0.25+"px";
   buyCallActive: boolean = false;
@@ -19,10 +21,23 @@ export class FooterContentComponent implements OnInit {
   isLoggedIn: boolean = false;
   isSigningIn: boolean = false;
 
+  streamerData: User | null = null;
+
+  ngOnInit(): void {
+
+    this.graphql.getStreamerData().subscribe((streamerData) => {
+      this.streamerData = streamerData;
+      console.log("streamerData: " + JSON.stringify(streamerData));
+    });
+
+  }
+
   constructor(private uiService: UiService, 
     private dialogService: NbDialogService,
+    googleApi: GoogleApiService,
+    private graphql: GraphqlService) {
 
-    googleApi: GoogleApiService) {
+      
     this.subscription = this.uiService
       .onToggle()
       .subscribe((value) => {this.buyCallActive = value;});
@@ -38,9 +53,7 @@ export class FooterContentComponent implements OnInit {
 
 
 
-  ngOnInit(): void {
-
-  }
+  
 
   onBuyCall() {
     this.uiService.toggleSetupBuyCall();

@@ -1,7 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CreatorPageComponent } from './creator-page/creator-page.component';
 
-const routes: Routes = [];
+const routes: Routes = [
+  { path: '', redirectTo: 'user/'+"15438975493", pathMatch: 'full' },
+  { path: 'user/:creator_id', component: CreatorPageComponent }
+
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
