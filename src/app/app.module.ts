@@ -17,6 +17,7 @@ import { OAuthModule } from 'angular-oauth2-oidc';
 import { OnboardModalComponent } from './components/onboard-modal/onboard-modal.component';
 import { FormsModule } from '@angular/forms';
 import { HeaderContentComponent } from './components/creator/header-content/header-content.component';
+import { CreatorPageComponent } from './creator-page/creator-page.component';
 
 
 
@@ -29,7 +30,8 @@ import { HeaderContentComponent } from './components/creator/header-content/head
     SetupBuyCallComponent,
     AuthModalComponent,
     OnboardModalComponent,
-    HeaderContentComponent
+    HeaderContentComponent,
+    CreatorPageComponent
   ],
   imports: [
     BrowserModule,
