@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UiService } from 'src/app/services/ui.service';
+import { UiService } from '../services/ui.service';
 import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { GraphqlService, User } from '../services/graphql.service';
