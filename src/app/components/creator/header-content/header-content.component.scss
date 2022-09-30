@@ -3,3 +3,55 @@
     transition: transform 1.5s;
     transform: rotateY(360deg);
   }
+
+.body {
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow: hidden;
+}
+
+.pfp {
+    height: 3rem;
+    width: 3rem;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    left: 10rem;
+    z-index: 1;
+  
+  }
+
+  nb-select {
+    z-index: 2;
+    opacity: 0;
+    position: relative;
+    left: 10rem;
+  }
+
+  .user-img {
+    width: 30%;
+  }
+
+  #select {
+    width: 70%;
+  }
+
+  .user-nav {
+    width: 5%;
+    display: grid;
+    // overflow: visible
+  }
+
+  .user-nav > * {
+    grid-column-start: 1;
+    grid-row-start: 1;
+    
+  }

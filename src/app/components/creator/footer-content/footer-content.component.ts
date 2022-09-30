@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Optional } from '@angular/core';
 import { UiService } from 'src/app/services/ui.service';
 import { Subscription } from 'rxjs';
-import { NbDialogService } from '@nebular/theme';
+import { NbDialogService, NbDialogRef } from '@nebular/theme';
 import { AuthModalComponent } from '../../auth-modal/auth-modal.component';
 import { GoogleApiService, UserInfo } from 'src/app/services/google-api.service';
 
@@ -49,8 +49,6 @@ export class FooterContentComponent implements OnInit {
 
   protected open(closeOnEsc: boolean) {
     this.dialogService.open(AuthModalComponent, { closeOnEsc }).onClose.subscribe(() => this.isSigningIn = false);
-    
-
   }
 
   onLogin() {

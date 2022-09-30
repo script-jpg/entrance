@@ -2,5 +2,24 @@
     <div id="animation-wrapper">
         <img id="logo" src="../../../../assets/logo.png" alt="logo" style="width: 50px; height: 50px;">
     </div>
+    <div class="right">
+        <div class="user-nav" *ngIf="this.googleApi.isLoggedIn()">
+
+            <nb-select size="large" id="select">
+                
+                <nb-option (click)="handleSelect('Profile')">Profile</nb-option>
+                <nb-option (click)="handleSelect('Log out')">Log out</nb-option>
+                
+            </nb-select>
+            <img class="pfp" [src]="profilePicSrc" alt="profile image">
+
+        </div>
+        
+        
+
+        <!-- <app-button *ngIf="this.googleApi.isLoggedIn()" (clickEvent)="this.googleApi.signOut()" text="Log Out"></app-button> -->
+
+    </div>
+    
 
 </div>

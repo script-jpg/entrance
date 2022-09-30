@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {GraphqlService} from '../../services/graphql.service';
+import {NbDialogRef} from '@nebular/theme';
 
 @Component({
   selector: 'app-onboard-modal',
@@ -8,12 +9,14 @@ import {GraphqlService} from '../../services/graphql.service';
 })
 export class OnboardModalComponent implements OnInit {
 
-  constructor(private graphqlService: GraphqlService) { }
+  constructor(
+    private graphqlService: GraphqlService, 
+    protected dialogRef: NbDialogRef<any>) { }
 
   ngOnInit(): void {
   }
 
-  file: File | undefined;
+  file: Blob | null = null;
 
   filePreview: string = "";
 
@@ -27,9 +30,14 @@ export class OnboardModalComponent implements OnInit {
     console.log("You have entered : " + result.username); 
     console.log("isStreamer : " + this.isStreamer);
     console.log("file undefined? : " + (this.file === undefined));
-    this.graphqlService.addNewUser(result.username, this.isStreamer, this.file, 1).then((value) => {
-      console.log("success: " + value);
-    });
+    if (this.file !== null) {
+      this.graphqlService.addNewUser(result.username, this.isStreamer, this.filePreview, 1).then((value: any) => {
+        console.log("success: " + value);
+        this.graphqlService.queryUser(value, this.graphqlService.getUserData());
+
+        this.dialogRef.close();
+      });
+    }
  }
 
  processFile(imageInput: any) {

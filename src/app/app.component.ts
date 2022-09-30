@@ -15,10 +15,8 @@ export class AppComponent {
   subscription: Subscription;
   buyCallActive: boolean = false;
   isHoverOnFooter: boolean = false;
-  isLoggedIn: boolean = false;
   graphql: GraphqlService;
   googleApi: GoogleApiService;
-  isNewUser: boolean = false;
 
   constructor(private uiService: UiService, graphql: GraphqlService, 
     googleApi: GoogleApiService, 
@@ -32,14 +30,12 @@ export class AppComponent {
       googleApi.userProfileSubject.subscribe((userProfile) => {
         const user_id = userProfile.info.sub;
         console.log("user_id: " + user_id);
-        graphql.isNewUser(user_id).then((value) => {
-          this.isNewUser = value;
-          console.log("isNewUser: " + this.isNewUser);
-          if (this.isNewUser) {
+        graphql.getIsNewUser().subscribe((isNewUser) => {
+          if (isNewUser) {
             this.open(true);
           }
         });
-      
+        graphql.queryUser(user_id,  graphql.getUserData());
     });
     
     console.log("hi");
@@ -52,10 +48,6 @@ export class AppComponent {
   protected open(closeOnEsc: boolean) {
     this.dialogService.open(OnboardModalComponent, { closeOnEsc })
 
-  }
-
-  logOut(): void {
-    this.googleApi.signOut();
   }
 
 

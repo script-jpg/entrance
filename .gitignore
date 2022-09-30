@@ -42,3 +42,4 @@ testem.log
 Thumbs.db
 
 /src/app/OAuth2GoogleInfo.json
+/src/app/AstraDBToken.json

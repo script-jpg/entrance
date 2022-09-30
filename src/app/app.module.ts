@@ -8,7 +8,7 @@ import { NbThemeModule, NbLayoutModule, NbDialogModule, NbDialogService, NbDialo
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { FooterContentComponent } from './components/creator/footer-content/footer-content.component';
 import { ButtonComponent } from './components/button/button.component';
-import { NbButtonModule, NbInputModule, NbCheckboxModule } from '@nebular/theme';
+import { NbButtonModule, NbInputModule, NbCheckboxModule, NbSelectModule, NbCardModule, NbToastrModule} from '@nebular/theme';
 import { SetupBuyCallComponent } from './components/creator/footer-content/setup-buy-call/setup-buy-call.component';
 import { MatSliderModule } from '@angular/material/slider';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
@@ -20,6 +20,7 @@ import { HeaderContentComponent } from './components/creator/header-content/head
 
 
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,7 +29,7 @@ import { HeaderContentComponent } from './components/creator/header-content/head
     SetupBuyCallComponent,
     AuthModalComponent,
     OnboardModalComponent,
-    HeaderContentComponent,
+    HeaderContentComponent
   ],
   imports: [
     BrowserModule,
@@ -44,7 +45,10 @@ import { HeaderContentComponent } from './components/creator/header-content/head
     HttpClientModule,
     FormsModule,
     NbInputModule,
-    NbCheckboxModule
+    NbCheckboxModule,
+    NbSelectModule,
+    NbCardModule,
+    NbToastrModule.forRoot(),
   ],
   providers: [
     
