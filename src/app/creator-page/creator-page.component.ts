@@ -60,21 +60,21 @@ export class CreatorPageComponent implements OnInit {
         console.log("user_id: " + user_id);
         this.graphql.getIsNewUser().subscribe((isNewUser) => {
           if (isNewUser) {
-            this.open(true);
+            this.open();
+
           }
         });
         this.graphql.queryUser(user_id,  graphql.getUserData());
     });
     
-    console.log("hi");
     this.subscription = this.uiService.onToggle().subscribe((value) => {
       this.buyCallActive = value;
     });
     
   }
 
-  protected open(closeOnEsc: boolean) {
-    this.dialogService.open(OnboardModalComponent, { closeOnEsc })
+  protected open() {
+    this.dialogService.open(OnboardModalComponent, { closeOnBackdropClick:false })
 
   }
 

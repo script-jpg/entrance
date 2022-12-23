@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {GraphqlService} from '../../services/graphql.service';
-import {NbDialogRef} from '@nebular/theme';
+import {NbDialogRef, NbToastrService} from '@nebular/theme';
 
 @Component({
   selector: 'app-onboard-modal',
@@ -11,7 +11,9 @@ export class OnboardModalComponent implements OnInit {
 
   constructor(
     private graphqlService: GraphqlService, 
-    protected dialogRef: NbDialogRef<any>) { }
+    protected dialogRef: NbDialogRef<any>,
+    private toastrService: NbToastrService) {
+    }
 
   ngOnInit(): void {
   }
@@ -22,6 +24,8 @@ export class OnboardModalComponent implements OnInit {
 
   isStreamer = false;
 
+  
+
   toggleStreamer(isStreamer: boolean) {
     this.isStreamer = isStreamer;
   }
@@ -29,13 +33,20 @@ export class OnboardModalComponent implements OnInit {
   onClickSubmit(result: any) {
     console.log("You have entered : " + result.username); 
     console.log("isStreamer : " + this.isStreamer);
+    sessionStorage.setItem('isStreamer', this.isStreamer.toString());
     console.log("file undefined? : " + (this.file === undefined));
-    if (this.file !== null) {
+    if (this.file === null) {
+      this.toastrService.danger("","Please add a profile picture")
+    } else if (result.username === "") {
+      this.toastrService.danger("","Please add a username")
+    } else {
       this.graphqlService.addNewUser(result.username, this.isStreamer, this.filePreview, 1).then((value: any) => {
         console.log("success: " + value);
         this.graphqlService.queryUser(value, this.graphqlService.getUserData());
 
         this.dialogRef.close();
+        // this.toastrService.success("","")
+
       });
     }
  }
