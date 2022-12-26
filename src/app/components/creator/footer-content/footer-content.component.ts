@@ -36,6 +36,7 @@ export class FooterContentComponent implements OnInit {
     private dialogService: NbDialogService,
     googleApi: GoogleApiService,
     private graphql: GraphqlService) {
+      localStorage.setItem("creator_id",this.creator_id);
 
       
     this.subscription = this.uiService
