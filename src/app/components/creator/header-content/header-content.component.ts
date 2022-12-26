@@ -15,6 +15,7 @@ export class HeaderContentComponent implements OnInit {
 
   positions = NbGlobalPhysicalPosition;
   private index: number = 0;
+  isStreamer: boolean = false;
 
   // showToast(position: any, status: any) {
   //   this.index += 1;
@@ -30,6 +31,7 @@ export class HeaderContentComponent implements OnInit {
 
       graphqlService.getUserData().subscribe((user) => {
         console.log("user: "+user);
+        this.isStreamer = user.is_streamer;
         this.profilePicSrc = user.profile_pic;
       });
 

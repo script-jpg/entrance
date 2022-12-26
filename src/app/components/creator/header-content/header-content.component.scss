@@ -14,7 +14,6 @@
 .right {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
     overflow: hidden;
 }
 
@@ -22,7 +21,6 @@
     height: 3rem;
     width: 3rem;
     border-radius: 50%;
-    cursor: pointer;
     position: relative;
     left: 10rem;
     z-index: 1;
@@ -47,6 +45,7 @@
   .user-nav {
     width: 5%;
     display: grid;
+    
     // overflow: visible
   }
 
@@ -54,4 +53,11 @@
     grid-column-start: 1;
     grid-row-start: 1;
     
+  }
+
+  #setup {
+    display: block;
+    position: relative;
+    left: 2.5rem;
+    width: 50%;
   }
