@@ -51,6 +51,7 @@
 }
 .choose_file input[type="file"]{
     -webkit-appearance:none; 
+    appearance: none;
     position:absolute;
     top:0; left:0;
     opacity:0; 

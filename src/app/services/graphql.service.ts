@@ -4,6 +4,12 @@ import { lastValueFrom, observable, Subject } from 'rxjs';
 import AstraDBToken from '../AstraDBToken.json';
 
 
+export interface StreamerSettings {
+  user_id: string,
+  cool_down_seconds: number,
+  platform_id: string,
+  price_per_minute: number,
+}
 
 export interface User {
   user_id: string
@@ -36,6 +42,7 @@ export class GraphqlService{
   private isNewUser = new Subject<boolean>();
   private userData = new Subject<User>();
   private streamerData = new Subject<User>();
+  private streamerSettings = new Subject<StreamerSettings>();
 
   getIsNewUser() {
     return this.isNewUser.asObservable();
@@ -49,17 +56,32 @@ export class GraphqlService{
     return this.streamerData;
   }
 
-  // async isNewUser(user_id: string): Promise<boolean> {
-  //   let isNewUser: boolean = false;
-  //   await this.isNewUserQuery(user_id).then((res) => {
-  //     isNewUser = res.data.user_by_id.values.length === 0;
-  //   });
-  //   console.log("isNewUser: " + isNewUser + " in graphql.service.ts");
-  //   const myPromise = new Promise<boolean>((resolve) => {
-  //     resolve(isNewUser);
-  //   });
-  //   return myPromise;
-  // }
+  getStreamerSettings() {
+    return this.streamerSettings.asObservable();
+  }
+
+  async queryStreamerSettings(user_id: string) {
+    const body: string = `
+    query OneStreamer {
+      streamer_settings_by_id(value: {user_id: "${user_id}"}) {
+        values {
+          user_id,
+          cool_down_seconds,
+          platform_id,
+          price_per_minute
+        }
+    
+      }
+    }`
+    // console.log('Getting Streamer Settings');
+    const headers = this.headers;
+    var res = this.http.post<any>('https://8cdfec44-3da0-4276-878b-298c404593d0-us-east1.apps.astra.datastax.com/api/graphql/entrance', body, {headers})
+    await lastValueFrom(res).then((res) => {
+      // console.log(res.data);
+      this.streamerSettings.next(res.data.streamer_settings_by_id.values[0]);
+    });
+    // console.log('Finished getting streamer settings.')
+  }
 
 
   async queryUser(user_id: string, location: Subject<User>) {

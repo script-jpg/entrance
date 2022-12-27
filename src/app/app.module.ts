@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
+import { AppComponent, SafePipe } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NbThemeModule, NbLayoutModule, NbDialogModule, NbDialogService, NbDialogRef} from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
@@ -31,7 +31,8 @@ import { CreatorPageComponent } from './creator-page/creator-page.component';
     AuthModalComponent,
     OnboardModalComponent,
     HeaderContentComponent,
-    CreatorPageComponent
+    CreatorPageComponent,
+    SafePipe
   ],
   imports: [
     BrowserModule,
