@@ -40,6 +40,9 @@ export class OnboardModalComponent implements OnInit {
     } else if (result.username === "") {
       this.toastrService.danger("","Please add a username")
     } else {
+      if (this.isStreamer) {
+        this.toastrService.success("", "Streamer Settings can be configured in settings")
+      }
       this.graphqlService.addNewUser(result.username, this.isStreamer, this.filePreview, 1).then((value: any) => {
         console.log("success: " + value);
         this.graphqlService.queryUser(value, this.graphqlService.getUserData());
