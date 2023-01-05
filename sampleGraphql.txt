@@ -1,0 +1,33 @@
+mutation updateOneBook {
+  moby: updatebook(value: {title:"Moby Dick", author:"Herman Melville", isbn: "9780140861723"}, ifExists: true ) {
+    value {
+      title
+      author
+      isbn
+    }
+  }
+}
+
+query oneUser {
+      user_by_id(value: { user_id: "107913638147265361815" }) {
+        values {
+          user_id
+          email,
+          username,
+          created,
+          updated,
+          is_streamer,
+          profile_pic,
+          version
+        }
+      }
+    }
+
+mutation updateUserConnectionId {
+  user: updateuser_by_id(value: {user_id:"107913638147265361815", connection_id: "69"}, ifExists: true ) {
+    value {
+      user_id
+      connection_id
+    }
+  }
+}

@@ -186,6 +186,23 @@ export class GraphqlService{
     var res = this.http.post<any>('https://8cdfec44-3da0-4276-878b-298c404593d0-us-east1.apps.astra.datastax.com/api/graphql/entrance', body, {headers})
     return await lastValueFrom(res);
   }
+
+  async updateConnectionId(user_id: string, connection_id: string) {
+    const body: any = `
+    mutation updateUserConnectionId {
+      user: updateuser_by_id(value: {user_id:"${user_id}", connection_id: "${connection_id}"}, ifExists: true ) {
+        value {
+          user_id
+          connection_id
+        }
+      }
+    }`
+    const headers = this.headers;
+    var res = this.http.post<any>('https://8cdfec44-3da0-4276-878b-298c404593d0-us-east1.apps.astra.datastax.com/api/graphql/entrance', body, {headers})
+    return await lastValueFrom(res).then((res) => {
+      console.log("updateConnectionId: " + res.data.user.value.user_id + " " + res.data.user.value.connection_id);
+    });
+  }
   
 
 
