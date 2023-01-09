@@ -106,6 +106,7 @@ export class GraphqlService{
       this.isNewUser.next(isNewUser);
       if (!isNewUser) {
         location.next(res.data.user_by_id.values[0]);
+        localStorage.setItem('user_id', res.data.user_by_id.values[0].user_id);
       }
     });
   }
