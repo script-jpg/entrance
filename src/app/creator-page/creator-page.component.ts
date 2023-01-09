@@ -9,6 +9,7 @@ import { OnboardModalComponent } from '../components/onboard-modal/onboard-modal
 import { ActivatedRoute } from '@angular/router';
 import {ParamMap} from '@angular/router';
 import { switchMap } from 'rxjs/operators';
+import { WebsocketService } from '../services/websocket.service';
 
 @Component({
   selector: 'app-creator-page',
@@ -63,7 +64,8 @@ export class CreatorPageComponent implements OnInit {
     googleApi: GoogleApiService, 
     private graphqlService: GraphqlService,
     private dialogService: NbDialogService,
-    private route: ActivatedRoute) {
+    private route: ActivatedRoute,
+    private websocketService: WebsocketService) {
       
     // nbDialogConfig: NbDialogConfig) {
       // nbDialogConfig.closeOnBackdropClick = false;

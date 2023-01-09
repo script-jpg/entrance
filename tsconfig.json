@@ -2,6 +2,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "noImplicitAny": false,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "baseUrl": "./",
