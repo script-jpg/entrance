@@ -1,37 +1,34 @@
 import { Injectable } from '@angular/core';
 
-import { RxStomp } from '@stomp/rx-stomp';
+import { webSocket } from 'rxjs/webSocket';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebsocketService {
-  readonly rxStomp: RxStomp;
   constructor() { 
-    this.rxStomp = new RxStomp();
+    
     const user_id = localStorage.getItem('user_id');
-
-    if (user_id === null) {
+    if (user_id == null) {
+      console.log("user_id is null");
       return;
     }
 
-    console.log("user_id: " + user_id + " from WebsocketService");
+    const wsLink: string = 'wss://4o15cnzf6e.execute-api.us-east-2.amazonaws.com/production';
 
-    this.rxStomp.configure({
-      brokerURL: 'wss://4o15cnzf6e.execute-api.us-east-2.amazonaws.com/production',
-      connectHeaders: {
-        login: 'guest',
-        passcode: 'guest'
-      },
-      heartbeatIncoming: 0,
-      heartbeatOutgoing: 20000,
-      reconnectDelay: 30000,
-      debug: (msg: string): void => {
-        console.log(new Date(), msg);
-      }
-    });
+    const subject = webSocket(wsLink);
 
-    this.rxStomp.activate();
+    subject.subscribe((value: any) => {
+      console.log('message received: ' + value['msg'])
+     });
+    // Note that at least one consumer has to subscribe to the created subject - otherwise "nexted" values will be just buffered and not sent,
+    // since no connection was established!
+
+    subject.next({ action: "updateUserInfo", user_id: user_id });
+    // This will send a message to the server once a connection is made. Remember value is serialized with JSON.stringify by default!
+
+    // subject.complete(); // Closes the connection.
   }
 
   
