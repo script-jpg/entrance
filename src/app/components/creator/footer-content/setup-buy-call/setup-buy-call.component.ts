@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 const perMinCost: number = 30;
 @Component({
   selector: 'app-setup-buy-call',
@@ -7,7 +8,7 @@ const perMinCost: number = 30;
 })
 export class SetupBuyCallComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
   }
@@ -22,7 +23,7 @@ export class SetupBuyCallComponent implements OnInit {
   }
 
   onConfirmBuyCall() {
-
+    this.router.navigate(['call']);
   }
 
 }

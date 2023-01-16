@@ -1,0 +1,43 @@
+#localVideo {
+    z-index: 0;
+    height: 100%;
+    width: 100vw;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+}
+
+// Button Container in the bottom center
+.button-container {
+    position: absolute;
+    bottom: 0rem;
+    left: 0;
+    right: 0;
+    padding-top: 2rem;
+    width: 100%;
+    height: 100px;
+    text-align: center;
+}
+
+//profile-pic-container in bottom left corner
+.profile-pic-container {
+    gap: 0.5rem;
+    display: flex;
+    position: absolute;
+    bottom: 0;
+    left: 1rem;
+    width: 100px;
+    height: 100px;
+}
+
+// pfp is circular
+.pfp {
+    border-radius: 50%;
+    width: 5rem;
+    height: 5rem;
+}
+
+button {
+    text-align: center;
+}

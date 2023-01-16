@@ -1364,7 +1364,7 @@
   resolved "https://registry.npmjs.org/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
-"@nebular/eva-icons@9.1.0-rc.3":
+"@nebular/eva-icons@^9.1.0-rc.3":
   version "9.1.0-rc.3"
   resolved "https://registry.npmjs.org/@nebular/eva-icons/-/eva-icons-9.1.0-rc.3.tgz"
   integrity sha512-8YzW8nHaI3gusARwqfRC6McyQEOmQiudgl6h3GMmdRlz/DShB6nyWtonz4TovHSmOH8UjZzZoXSiQHCV/olxDA==
@@ -2925,7 +2925,7 @@ etag@~1.8.1:
   resolved "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz"
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
 
-eva-icons@^1.1.2:
+eva-icons@^1.1.3:
   version "1.1.3"
   resolved "https://registry.npmjs.org/eva-icons/-/eva-icons-1.1.3.tgz"
   integrity sha512-QBSEWNbEx1H0numXP1qgxKVCZHonRaky5ft4pGzQBcO4cy7mEja6TuJ8rc7BqX2pmkvetVQWKDH+DK/8y7GTag==
