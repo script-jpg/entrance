@@ -3,6 +3,7 @@ import { GoogleApiService } from 'src/app/services/google-api.service';
 import {GraphqlService} from '../../../services/graphql.service';
 import defaultPfp from '../../../default-img.json'
 import { NbGlobalPhysicalPosition, NbToastrService } from '@nebular/theme';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header-content',
@@ -25,6 +26,7 @@ export class HeaderContentComponent implements OnInit {
   constructor(
     public googleApi: GoogleApiService, 
     graphqlService: GraphqlService,
+    private router: Router
     ) {
 
       // this.showToast(this.positions.TOP_RIGHT, "Logged in")a;
@@ -49,6 +51,11 @@ export class HeaderContentComponent implements OnInit {
       default:
         break;
     }
+  }
+
+  startStream() {
+    console.log("start stream");
+    this.router.navigate(['call/0']);
   }
 
 }

@@ -64,8 +64,7 @@ export class CreatorPageComponent implements OnInit {
     googleApi: GoogleApiService, 
     private graphqlService: GraphqlService,
     private dialogService: NbDialogService,
-    private route: ActivatedRoute,
-    private websocketService: WebsocketService) {
+    private route: ActivatedRoute) {
       
     // nbDialogConfig: NbDialogConfig) {
       // nbDialogConfig.closeOnBackdropClick = false;
