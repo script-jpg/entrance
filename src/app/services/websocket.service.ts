@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 
-import { webSocket } from 'rxjs/webSocket';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { environment } from 'src/environments/environment';
+import { Message } from '../types/message';
+import { Subject, Observable } from 'rxjs';
 
-const subject = webSocket(environment.wsLink);
+
 
 @Injectable({
   providedIn: 'root'
@@ -11,23 +13,61 @@ const subject = webSocket(environment.wsLink);
 
 
 export class WebsocketService {
+  private user_id: string = localStorage.getItem('user_id');
+  private socket$: WebSocketSubject<Message>;
+  private messagesSubject: Subject<Message> = new Subject<Message>();
+
+  getMessages(): Observable<Message> {
+    return this.messagesSubject.asObservable();
+  }
   
   constructor() { 
+  }
 
-    console.log(
-      "Hello from WebsocketService constructor"
-    )
-    
-    const user_id = localStorage.getItem('user_id');
-    if (user_id == null) {
-      console.log("user_id is null");
-      return;
+  public connect(): void {
+
+    if (!this.socket$ || this.socket$.closed) {
+      this.socket$ = this.getNewWebSocket();
+
+      this.socket$.next({ action: "updateUserInfo", user_id: this.user_id, msg: "", msgType: "", sender_id: "" });
+      console.log("Sent updateUserInfo message to server")
+
+      this.socket$.subscribe(
+        // Called whenever there is a message from the server
+        msg => {
+          console.log('Received message of type: ' + msg.msgType);
+          this.messagesSubject.next(msg);
+        }
+      );
     }
+  }
 
-    subject.subscribe((value: any) => {
-      // console.log('message received: ' + value['msg']);
-      // console.log('message from ' + value['sender_id'])
-      console.log(value);
+  sendMessage(message: Message): void {
+    console.log('Sending message of type: ' + message.msgType)
+    this.socket$.next(message);
+  }
+
+  public getNewWebSocket(): WebSocketSubject<Message> {
+    return webSocket({
+      url: environment.wsLink,
+      openObserver: {
+        next: () => {
+          console.log('Connected to websocket');
+        }
+      },
+      closeObserver: {
+        next: () => {
+          console.log('Disconnected from websocket');
+          this.connect();
+        }
+      }
+    })
+
+  
+
+}
+
+/* From https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Signaling_and_video_calling */
 
       // if (value['action'] === "sendMessage") {
       //   if (value['msgType'] === "video-offer") {
@@ -40,21 +80,6 @@ export class WebsocketService {
       //     closeVideoCall();
       //   }
       // }
-     });
-    // Note that at least one consumer has to subscribe to the created subject - otherwise "nexted" values will be just buffered and not sent,
-    // since no connection was established!
 
-    subject.next({ action: "updateUserInfo", user_id: user_id });
-    console.log("Sent updateUserInfo message to server")
-    // This will send a message to the server once a connection is made. Remember value is serialized with JSON.stringify by default!
-
-    // subject.complete(); // Closes the connection.
-  }
 }
-
-/* From https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Signaling_and_video_calling */
-
-
-
-
 

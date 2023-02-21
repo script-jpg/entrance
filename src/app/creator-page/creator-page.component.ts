@@ -97,12 +97,12 @@ export class CreatorPageComponent implements OnInit {
 
   setIsHoverOnFooter(): void {
     this.isHoverOnFooter = true;
-    console.log("isHoverOnFooter: " + this.isHoverOnFooter);
+    // console.log("isHoverOnFooter: " + this.isHoverOnFooter);
   }
 
   setNotHoverOnFooter(): void {
     this.isHoverOnFooter = false;
-    console.log("isHoverOnFooter: " + this.isHoverOnFooter);
+    // console.log("isHoverOnFooter: " + this.isHoverOnFooter);
   }
 
 }

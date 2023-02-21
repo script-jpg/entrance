@@ -1,16 +1,12 @@
-<div class="body">
-    <video #remoteVideo controls autoplay></video>
-    <div class="footer">
-        
-        <div class="profile-pic-container">
-            <img class="pfp" id="creatorProfilePic" src="https://i.imgur.com/1ZQ3w9q.jpg" alt="profile pic">
-            <img class="pfp" id="userProfilePic" src="https://i.imgur.com/1ZQ3w9q.jpg" alt="profile pic">
-        </div>
-        <div class="button-container">
-            <button (click)="mute()" >Mute</button>
-            <button (click)="hangUpCall()">End Call</button>
-        </div>
-
-    </div>
-    
+<div class="container">
+    <video #local_video id="localVideo" [autoplay]="true" [muted]="true"></video>
+    <video #received_video id="RecievedVideo" [autoplay]="true"></video>
 </div>
+<div class="footer">
+    <button (click)="startLocalVideo()" [disabled]="localVideoActive">Start Local</button>
+    <button (click)="pauseLocalVideo()" [disabled]="!localVideoActive">Stop Local</button>
+    <button (click)="call()" [disabled]="inCall || !localVideoActive">Call</button>
+    <button (click)="hangUp()" [disabled]="!inCall">HangUp</button>
+</div>
+    
+  

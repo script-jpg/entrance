@@ -5,11 +5,25 @@ import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit } from '@angular/core';
+import { WebsocketService } from '../services/websocket.service';
+import { Message } from '../types/message';
 
+export const ENV_RTCPeerConfiguration = environment.RTCPeerConfiguration;
 
+const mediaConstraints = {
+  audio: true,
+  video: true
+  // video: {width: 1280, height: 720} // 16:9
+  // video: {width: 960, height: 540}  // 16:9
+  // video: {width: 640, height: 480}  //  4:3
+  // video: {width: 160, height: 120}  //  4:3
+};
 
-const subject = webSocket(environment.wsLink);
-let myPeerConnection: any;
+const offerOptions = {
+  offerToReceiveAudio: true,
+  offerToReceiveVideo: true
+};
 
 
 
@@ -19,343 +33,280 @@ let myPeerConnection: any;
   styleUrls: ['./video-call.component.scss'],
   providers: [NbIconModule]
 })
-export class VideoCallComponent implements OnInit {
-  remoteSrc: any;
-  localSrc: any;
-  @ViewChild('remoteVideo') remoteVideo: ElementRef;
+export class VideoCallComponent implements AfterViewInit {
+  targetUser: string = localStorage.getItem('creator_id');
+  sender_id: string = localStorage.getItem('user_id');
   
 
-  getRemoteSrc() {
-    return this.remoteSrc;
-  }
+  @ViewChild('local_video') localVideo: ElementRef;
+  @ViewChild('received_video') remoteVideo: ElementRef;
 
-  getLocalSrc() {
-    return this.localSrc;
-  }
+  private peerConnection: RTCPeerConnection;
 
-  getRemoteVideo() {
-    return this.remoteVideo;
-  }
+  private localStream: MediaStream = null;
 
-  hangUpCall() {
-    closeVideoCall();
-    sendToServer({
-      name: myUsername,
-      target: targetUsername,
-      type: "hang-up",
-    });
-    this.router.navigate(['']);
-    console.log("Call ended");
-  }
-  
+  inCall = false;
+  localVideoActive = false;
 
-  constructor(private route: ActivatedRoute, private router: Router) { 
-    myPeerConnection = new RTCPeerConnection({
-      iceServers: [
-        // Information about ICE servers - Use your own!
-        {
-          urls: ['stun:stun1.l.google.com:19302',
-          'stun:stun2.l.google.com:19302',]
-        },
-      ],
-      iceCandidatePoolSize: 10,
-    });
 
-    this.remoteVideo = new ElementRef(null);
-    
-  }
+  constructor(private dataService: WebsocketService) { }
 
-  handleTrackEvent(event) {
-    console.log("handleTrackEvent: "+ event);
-    this.remoteVideo.nativeElement!.srcObject = event.streams[0];
-  }
+  async call(): Promise<void> {
+    this.createPeerConnection();
 
-  handleVideoAnswerMsg(msg) {
-    console.log("handleVideoAnswerMsg: ", msg)
-    const desc = new RTCSessionDescription(msg.sdp);
-    myPeerConnection.setRemoteDescription(desc).catch(reportError);
-  
-  }
+    // Add the tracks from the local stream to the RTCPeerConnection
+    this.localStream.getTracks().forEach(
+      track => this.peerConnection.addTrack(track, this.localStream)
+    );
 
-  handleNewICECandidateMsg(msg) {
-    const candidate = new RTCIceCandidate(msg.candidate);
-  
-    myPeerConnection!.addIceCandidate(candidate).catch(reportError);
-  }
-  
+    try {
+      const offer: RTCSessionDescriptionInit = await this.peerConnection.createOffer(offerOptions);
+      // Establish the offer as the local peer's current description.
+      await this.peerConnection.setLocalDescription(offer);
 
-  ngOnInit(): void {
+      this.inCall = true;
 
-    console.log(
-      "Hello from VideoCallComponent constructor"
-    )
-    
-    const user_id = localStorage.getItem('user_id');
-    if (user_id == null) {
-      console.log("user_id is null");
-      return;
+      this.dataService.sendMessage({msgType: 'offer', msg: offer, sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
+    } catch (err) {
+      this.handleGetUserMediaError(err);
     }
+  }
 
-    subject.subscribe((value: any) => {
-      // console.log('message received: ' + value['msg']);
-      // console.log('message from ' + value['sender_id'])
-      console.log(value);
-      console.log('message type: ' + value['msgType']);
-      if (value['msgType'] === "video-offer") {
-        this.handleVideoOfferMsg(value);
-      } else if (value['msgType'] === "video-answer") {
-        this.handleVideoAnswerMsg(value);
-      } else if (value['msgType'] === "new-ice-candidate") {
-        this.handleNewICECandidateMsg(value);
-      } else if (value['msgType'] === "hang-up") {
-        closeVideoCall();
+  hangUp(): void {
+    this.dataService.sendMessage({msgType: 'hangup', msg: '', sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
+    this.closeVideoCall();
+  }
+
+  ngAfterViewInit(): void {
+    this.addIncominMessageHandler();
+    this.requestMediaDevices();
+  }
+
+  private addIncominMessageHandler(): void {
+    this.dataService.connect();
+
+    // this.transactions$.subscribe();
+    this.dataService.getMessages().subscribe((msg: Message) => {
+      switch (msg.msgType) {
+        case 'offer':
+          this.handleOfferMessage(msg.msg, msg.sender_id);
+          break;
+        case 'answer':
+          this.handleAnswerMessage(msg.msg);
+          break;
+        case 'hangup':
+          this.handleHangupMessage(msg);
+          break;
+        case 'ice-candidate':
+          this.handleICECandidateMessage(msg.msg);
+          break;
+        default:
+          console.log('unknown message of type ' + msg.msgType);
       }
     });
-    // Note that at least one consumer has to subscribe to the created subject - otherwise "nexted" values will be just buffered and not sent,
-    // since no connection was established!
+  }
 
-    subject.next({ action: "updateUserInfo", user_id: user_id });
-    console.log("Sent updateUserInfo message to server")
-    // This will send a message to the server once a connection is made. Remember value is serialized with JSON.stringify by default!
+  /* ########################  MESSAGE HANDLER  ################################## */
 
-    // subject.complete(); // Closes the connection.
+  private handleOfferMessage(msg: RTCSessionDescriptionInit, sender_id): void {
+    console.log('handle incoming offer');
+    console.log('sender of offer is or user_id: '+sender_id)
+    console.log('the current user is: '+this.sender_id)
+    if (!this.peerConnection) {
+      this.createPeerConnection();
+    }
 
+    if (!this.localStream) {
+      
+      this.startLocalVideo();
+    }
 
-    let isInviter: boolean = this.route.snapshot.paramMap.get('isInviter') === '1';
-    console.log("isInviter: " + isInviter);
-    if (isInviter) {
-      console.log("Inviting to call...");
-      this.invite();
+    this.peerConnection.setRemoteDescription(new RTCSessionDescription(msg))
+      .then(() => {
+
+        // add media stream to local video
+        this.localVideo.nativeElement.srcObject = this.localStream;
+
+        // add media tracks to remote connection
+        this.localStream.getTracks().forEach(
+          track => {
+            try {
+              this.peerConnection.addTrack(track, this.localStream);
+            } catch (e) {
+              console.error(e);
+            }
+          }
+        );
+
+      }).then(() => {
+
+      // Build SDP for answer message
+      return this.peerConnection.createAnswer();
+
+    }).then((answer) => {
+
+      // Set local SDP
+      return this.peerConnection.setLocalDescription(answer);
+
+    }).then(() => {
+
+      // Send local SDP to remote party
+      this.dataService.sendMessage({msgType: 'answer', msg: this.peerConnection.localDescription, sender_id: this.sender_id, user_id: sender_id, action: 'sendMessage'});
+
+      this.inCall = true;
+
+    }).catch(this.handleGetUserMediaError);
+  }
+
+  private handleAnswerMessage(msg: RTCSessionDescriptionInit): void {
+    console.log('handle incoming answer');
+    this.peerConnection.setRemoteDescription(msg);
+  }
+
+  private handleHangupMessage(msg: Message): void {
+    console.log(msg);
+    this.closeVideoCall();
+  }
+
+  private handleICECandidateMessage(msg: RTCIceCandidate): void {
+    const candidate = new RTCIceCandidate(msg);
+    this.peerConnection.addIceCandidate(candidate).catch(this.reportError);
+  }
+
+  private async requestMediaDevices(): Promise<void> {
+    try {
+      this.localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+      // pause all tracks
+      this.pauseLocalVideo();
+    } catch (e) {
+      console.error(e);
+      alert(`getUserMedia() error: ${e.name}`);
     }
   }
 
-  createPeerConnection() {
-    console.log("myPeerConnection "+myPeerConnection);
-  
-    myPeerConnection.onicecandidate = handleICECandidateEvent;
-    myPeerConnection.ontrack = this.handleTrackEvent;
-    myPeerConnection.onnegotiationneeded = handleNegotiationNeededEvent;
-    myPeerConnection.removeTrack = handleRemoveTrackEvent;
-    myPeerConnection.oniceconnectionstatechange = handleICEConnectionStateChangeEvent;
-    myPeerConnection.onicegatheringstatechange = handleICEGatheringStateChangeEvent;
-    myPeerConnection.onsignalingstatechange = handleSignalingStateChangeEvent;
+  startLocalVideo(): void {
+    console.log('starting local stream');
+    this.localStream.getTracks().forEach(track => {
+      track.enabled = true;
+    });
+    this.localVideo.nativeElement.srcObject = this.localStream;
+
+    this.localVideoActive = true;
   }
 
-  invite() {
-    this.createPeerConnection();
-  
-    navigator.mediaDevices
-      .getUserMedia(mediaConstraints)
-      .then((localStream) => {
-        // document.getElementById("local_video").srcObject = localStream;
-        localStream
-          .getTracks()
-          .forEach((track) => myPeerConnection.addTrack(track, localStream));
-      })
-      .catch(this.handleGetUserMediaError);
+  pauseLocalVideo(): void {
+    console.log('pause local stream');
+    this.localStream.getTracks().forEach(track => {
+      track.enabled = false;
+    });
+    this.localVideo.nativeElement.srcObject = undefined;
+
+    this.localVideoActive = false;
   }
-  
-  handleGetUserMediaError(e) {
+
+  private createPeerConnection(): void {
+    console.log('creating PeerConnection...');
+    this.peerConnection = new RTCPeerConnection(ENV_RTCPeerConfiguration);
+
+    this.peerConnection.onicecandidate = this.handleICECandidateEvent;
+    this.peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;
+    this.peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent;
+    this.peerConnection.ontrack = this.handleTrackEvent;
+  }
+
+  private closeVideoCall(): void {
+    console.log('Closing call');
+
+    if (this.peerConnection) {
+      console.log('--> Closing the peer connection');
+
+      this.peerConnection.ontrack = null;
+      this.peerConnection.onicecandidate = null;
+      this.peerConnection.oniceconnectionstatechange = null;
+      this.peerConnection.onsignalingstatechange = null;
+
+      // Stop all transceivers on the connection
+      this.peerConnection.getTransceivers().forEach(transceiver => {
+        transceiver.stop();
+      });
+
+      // Close the peer connection
+      this.peerConnection.close();
+      this.peerConnection = null;
+
+      this.inCall = false;
+    }
+  }
+
+  /* ########################  ERROR HANDLER  ################################## */
+  private handleGetUserMediaError(e: Error): void {
     switch (e.name) {
-      case "NotFoundError":
-        alert(
-          "Unable to open your call because no camera and/or microphone" +
-            "were found."
-        );
+      case 'NotFoundError':
+        alert('Unable to open your call because no camera and/or microphone were found.');
         break;
-      case "SecurityError":
-      case "PermissionDeniedError":
+      case 'SecurityError':
+      case 'PermissionDeniedError':
         // Do nothing; this is the same as the user canceling the call.
         break;
       default:
-        alert(`Error opening your camera and/or microphone: ${e.message}`);
+        console.log(e);
+        alert('Error opening your camera and/or microphone: ' + e.message);
         break;
     }
-  
-    closeVideoCall();
+
+    this.closeVideoCall();
   }
 
-
-
-  mute() {
-    console.log("Muted");
+  private reportError = (e: Error) => {
+    console.log('got Error: ' + e.name);
+    console.log(e);
   }
 
-  handleVideoOfferMsg(msg) {
-    let localStream;
-  
-    targetUsername = msg.sender_id;
-    this.createPeerConnection();
-    console.log("handleVideoOfferMsg: ")
-  
-    const desc = new RTCSessionDescription(msg.sdp);
-  
-    myPeerConnection!
-      .setRemoteDescription(desc)
-      .then(() => navigator.mediaDevices.getUserMedia(mediaConstraints))
-      .then((stream) => {
-        localStream = stream;
-        // document.getElementById("local_video").srcObject = localStream;
-  
-        localStream
-          .getTracks()
-          .forEach((track) => myPeerConnection.addTrack(track, localStream));
-      })
-      .then(() => myPeerConnection!.createAnswer())
-      .then((answer) => myPeerConnection!.setLocalDescription(answer))
-      .then(() => {
-        const msg = {
-          name: myUsername,
-          target: targetUsername,
-          type: "video-answer",
-          sdp: myPeerConnection!.localDescription,
-        };
-  
-        sendToServer(msg);
-      })
-      .catch(this.handleGetUserMediaError);
-  }
-    
-  
-}
-
-function sendToServer(obj: any): void {
-  console.log("Sending to server: " + JSON.stringify(obj, null, 4));
-  let pack = {   "action": "sendMessage",   "msgType": obj.type,  "user_id": obj.target };
-  if (obj.type === "video-offer") {
-    pack["msg"] = obj.sdp;
-  } else if (obj.type === "video-answer") {
-    pack["msg"] = obj.sdp;
-  } else if (obj.type === "new-ice-candidate") {
-    pack["msg"] = obj.candidate;
-  } else if (obj.type === "hang-up") {
-    pack["msg"] = "hang-up";
+  /* ########################  EVENT HANDLER  ################################## */
+  private handleICECandidateEvent = (event: RTCPeerConnectionIceEvent) => {
+    console.log(event);
+    if (event.candidate) {
+      this.dataService.sendMessage({
+        msgType: 'ice-candidate',
+        msg: event.candidate,
+        sender_id: this.sender_id,
+        user_id: this.targetUser,
+        action: 'sendMessage'
+      });
+    }
   }
 
-  pack["sender_id"] = myUsername;
+  private handleICEConnectionStateChangeEvent = (event: Event) => {
+    console.log(event);
+    switch (this.peerConnection.iceConnectionState) {
+      case 'closed':
+      case 'failed':
+      case 'disconnected':
+        this.closeVideoCall();
+        break;
+    }
+  }
 
-  subject.next(pack);
-}
+  private handleSignalingStateChangeEvent = (event: Event) => {
+    console.log(event);
+    switch (this.peerConnection.signalingState) {
+      case 'closed':
+        this.closeVideoCall();
+        break;
+    }
+  }
 
+  private handleTrackEvent = (event: RTCTrackEvent) => {
+    console.log('handle track event');
+    console.log(event);
+    this.remoteVideo.nativeElement.srcObject = event.streams[0];
+  }
 
-
-let myUsername = localStorage.getItem('user_id');
-
-let targetUsername: string | null = localStorage.getItem('creator_id') // change this
-
-
-const mediaConstraints = {
-  audio: true, // We want an audio track
-  video: true, // And we want a video track
-};
-
-
-
-
-
-function handleNegotiationNeededEvent() {
-  console.log(myPeerConnection);
-
-  console.log("handleNegotiationNeededEvent");
-  myPeerConnection
-  .createOffer()
-  .then((offer) => myPeerConnection.setLocalDescription(offer))
-  .then(() => {
-    sendToServer({
-      name: myUsername,
-      target: targetUsername,
-      type: "video-offer",
-      sdp: myPeerConnection!.localDescription,
-    });
-  })
-  .catch(reportError);
-
-}
-
-
-
-
-function handleICECandidateEvent(event) {
-  if (event.candidate) {
-    sendToServer({
-      type: "new-ice-candidate",
-      target: targetUsername,
-      candidate: event.candidate,
+  mute(): void {
+    this.localStream.getAudioTracks().forEach(track => {
+      track.enabled = !track.enabled;
     });
   }
 }
 
-
-
-
-function handleRemoveTrackEvent(event) {
-  const stream = event.streams[0];
-  const trackList = stream.getTracks();
-
-  if (trackList.length === 0) {
-    closeVideoCall();
-  }
-}
-
-
-
-
-
-
-function closeVideoCall() {
-  const remoteVideo = (VideoCallComponent as any).getRemoteVideo();
-  const localVideo = (VideoCallComponent as any).localSrc;
-
-  if (myPeerConnection) {
-    myPeerConnection.ontrack = null;
-    // myPeerConnection.removeTrack = null;
-    // myPeerConnection.onremovestream = null;
-    myPeerConnection.onicecandidate = null;
-    myPeerConnection.oniceconnectionstatechange = null;
-    myPeerConnection.onsignalingstatechange = null;
-    myPeerConnection.onicegatheringstatechange = null;
-    myPeerConnection.onnegotiationneeded = null;
-
-    if (remoteVideo.srcObject) {
-      remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
-    }
-
-    if (localVideo.srcObject) {
-      localVideo.srcObject.getTracks().forEach((track) => track.stop());
-    }
-
-    myPeerConnection.close();
-    // myPeerConnection = null;
-  }
-
-  // remoteVideo.removeAttribute("src");
-  // remoteVideo.removeAttribute("srcObject");
-  // localVideo.removeAttribute("src");
-  // remoteVideo.removeAttribute("srcObject");
-
-  // document.getElementById("hangup-button").disabled = true;
-  // targetUsername = null;
-}
-
-function handleICEConnectionStateChangeEvent(event) {
-  switch (myPeerConnection!.iceConnectionState) {
-    case "closed":
-    case "failed":
-      closeVideoCall();
-      break;
-  }
-}
-
-function handleSignalingStateChangeEvent(event) {
-  switch (myPeerConnection!.signalingState) {
-    case "closed":
-      closeVideoCall();
-      break;
-  }
-}
-
-function handleICEGatheringStateChangeEvent(event) {
-  // Our sample just logs information to console here,
-  // but you can do whatever you need.
-}
 
