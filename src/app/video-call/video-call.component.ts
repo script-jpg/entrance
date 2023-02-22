@@ -36,6 +36,7 @@ const offerOptions = {
 export class VideoCallComponent implements AfterViewInit {
   targetUser: string = localStorage.getItem('creator_id');
   sender_id: string = localStorage.getItem('user_id');
+  muteInnerHTML: string = 'Mute';
   
 
   @ViewChild('local_video') localVideo: ElementRef;
@@ -49,7 +50,7 @@ export class VideoCallComponent implements AfterViewInit {
   localVideoActive = false;
 
 
-  constructor(private dataService: WebsocketService) { }
+  constructor(private dataService: WebsocketService, private route: ActivatedRoute) { }
 
   async call(): Promise<void> {
     this.createPeerConnection();
@@ -79,7 +80,13 @@ export class VideoCallComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.addIncominMessageHandler();
-    this.requestMediaDevices();
+    this.requestMediaDevices().then(() => {
+      this.startLocalVideo();
+      if (this.route.snapshot.params['isInviter'] === '1') { //disallow calls if creator is not streaming
+        console.log('isInviter is true')
+        this.call();
+      }
+    });
   }
 
   private addIncominMessageHandler(): void {
@@ -305,6 +312,7 @@ export class VideoCallComponent implements AfterViewInit {
   mute(): void {
     this.localStream.getAudioTracks().forEach(track => {
       track.enabled = !track.enabled;
+      this.muteInnerHTML = track.enabled ? 'Mute' : 'Unmute';
     });
   }
 }
