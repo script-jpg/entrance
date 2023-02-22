@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { NbIconModule } from '@nebular/theme';
 import { webSocket } from 'rxjs/webSocket';
 import { environment } from 'src/environments/environment';
@@ -46,11 +46,16 @@ export class VideoCallComponent implements AfterViewInit {
 
   private localStream: MediaStream = null;
 
+  private isInviter: boolean = false;
+
   inCall = false;
   localVideoActive = false;
 
 
-  constructor(private dataService: WebsocketService, private route: ActivatedRoute) { }
+  constructor(
+    private dataService: WebsocketService, 
+    private route: ActivatedRoute,
+    private router: Router) { }
 
   async call(): Promise<void> {
     this.createPeerConnection();
@@ -74,15 +79,21 @@ export class VideoCallComponent implements AfterViewInit {
   }
 
   hangUp(): void {
+    console.log('hangup called');
     this.dataService.sendMessage({msgType: 'hangup', msg: '', sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
     this.closeVideoCall();
+    //go back to the creator page of the last creator you were on 
+    this.router.navigate(['user/'+this.targetUser]);
   }
 
   ngAfterViewInit(): void {
+    this.isInviter = this.route.snapshot.params['isInviter'] === '1';
+    console.log('isInviter is: '+this.isInviter)
+    this.dataService.connect();
     this.addIncominMessageHandler();
     this.requestMediaDevices().then(() => {
       this.startLocalVideo();
-      if (this.route.snapshot.params['isInviter'] === '1') { //disallow calls if creator is not streaming
+      if (this.isInviter) { //disallow calls if creator is not streaming
         console.log('isInviter is true')
         this.call();
       }
@@ -119,6 +130,7 @@ export class VideoCallComponent implements AfterViewInit {
     console.log('handle incoming offer');
     console.log('sender of offer is or user_id: '+sender_id)
     console.log('the current user is: '+this.sender_id)
+    if (sender_id != undefined) this.targetUser = sender_id;
     if (!this.peerConnection) {
       this.createPeerConnection();
     }
@@ -158,7 +170,7 @@ export class VideoCallComponent implements AfterViewInit {
     }).then(() => {
 
       // Send local SDP to remote party
-      this.dataService.sendMessage({msgType: 'answer', msg: this.peerConnection.localDescription, sender_id: this.sender_id, user_id: sender_id, action: 'sendMessage'});
+      this.dataService.sendMessage({msgType: 'answer', msg: this.peerConnection.localDescription, sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
 
       this.inCall = true;
 
@@ -173,6 +185,15 @@ export class VideoCallComponent implements AfterViewInit {
   private handleHangupMessage(msg: Message): void {
     console.log(msg);
     this.closeVideoCall();
+    console.log("isInviter: "+this.isInviter)
+    if (this.isInviter) {
+      // if the creator is the one who hung up, the user is redirected to their stream page
+      console.log('navigating back to creator page');
+      this.router.navigate(['user/'+this.targetUser]);
+    } else {
+      // the creator stays on their stream page after a user has hung up
+      this.remoteVideo.nativeElement.srcObject = null;
+    }
   }
 
   private handleICECandidateMessage(msg: RTCIceCandidate): void {
@@ -289,7 +310,10 @@ export class VideoCallComponent implements AfterViewInit {
       case 'closed':
       case 'failed':
       case 'disconnected':
-        this.closeVideoCall();
+        console.log("Disconnected from handleICEConnectionStateChangeEvent")
+
+        // if the creator is the one who hung up, the user is redirected to their stream page
+        this.router.navigate(['user/'+this.targetUser]);
         break;
     }
   }
@@ -299,6 +323,7 @@ export class VideoCallComponent implements AfterViewInit {
     switch (this.peerConnection.signalingState) {
       case 'closed':
         this.closeVideoCall();
+        console.log("Closed from handleSignalingStateChangeEvent");
         break;
     }
   }
