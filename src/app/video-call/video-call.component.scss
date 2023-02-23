@@ -3,12 +3,12 @@
 #localVideo {
     z-index: 1;
     // Position the local video in the bottom right corner
-    position: absolute;
-    bottom: 1rem;
-    right: 0;
+    // position: absolute;
+    // bottom: 1rem;
+    // right: 0;
     // Size the local video to 25% of the screen
-    width: 25%;
-    height: 25%;
+    width: inherit;
+    height: inherit;
 
 }
 
@@ -55,20 +55,35 @@
 .profile-pic-container {
     gap: 0.5rem;
     display: flex;
-    position: absolute;
-    bottom: 0;
-    left: 1rem;
-    width: 100px;
-    height: 100px;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 100vw;
+    height: 30rem;
 }
 
 // pfp is circular
 .pfp {
     border-radius: 50%;
-    width: 5rem;
-    height: 5rem;
+    width: 10rem;
+    height: 10rem;
 }
 
 button {
     text-align: center;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+.box {
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
