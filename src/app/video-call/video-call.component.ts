@@ -8,6 +8,7 @@ import { ElementRef, ViewChild } from '@angular/core';
 import { AfterViewInit } from '@angular/core';
 import { WebsocketService } from '../services/websocket.service';
 import { Message } from '../types/message';
+import { User, GraphqlService } from '../services/graphql.service';
 
 export const ENV_RTCPeerConfiguration = environment.RTCPeerConfiguration;
 
@@ -33,10 +34,12 @@ const offerOptions = {
   styleUrls: ['./video-call.component.scss'],
   providers: [NbIconModule]
 })
-export class VideoCallComponent implements AfterViewInit {
+export class VideoCallComponent implements AfterViewInit, OnInit {
   targetUser: string = localStorage.getItem('creator_id');
   sender_id: string = localStorage.getItem('user_id');
   muteInnerHTML: string = 'Mute';
+
+  userData: User | null = null;
   
 
   @ViewChild('local_video') localVideo: ElementRef;
@@ -48,6 +51,9 @@ export class VideoCallComponent implements AfterViewInit {
 
   private isInviter: boolean = false;
 
+  // user_profile_pic = JSON.parse(localStorage.getItem('userData')).profile_pic;
+  user_profile_pic = localStorage.getItem('user_profile_pic');
+  remote_profile_pic: string = '';
 
 
   inCall = false;
@@ -57,7 +63,44 @@ export class VideoCallComponent implements AfterViewInit {
   constructor(
     private dataService: WebsocketService, 
     private route: ActivatedRoute,
-    private router: Router) { }
+    private router: Router,
+    private graphql: GraphqlService) { }
+
+  ngOnInit(): void {
+    this.user_profile_pic = localStorage.getItem('user_profile_pic');
+    this.remote_profile_pic = localStorage.getItem('streamer_profile_pic');
+
+    this.graphql.getUserData().subscribe((user: any) => {
+      console.log("Recieved user-data:");
+      console.log(user);
+      this.remote_profile_pic = user.profile_pic;
+    });
+  }
+
+
+
+  ngAfterViewInit(): void {
+
+    // set remote profile pic
+    if (this.isInviter) this.remote_profile_pic = localStorage.getItem('streamer_profile_pic');
+
+    this.isInviter = this.route.snapshot.params['isInviter'] === '1';
+    console.log('isInviter is: '+this.isInviter)
+    this.dataService.connect();
+    this.addIncominMessageHandler();
+    this.requestMediaDevices().then(() => {
+      // this.startLocalVideo();
+      this.startLocalAudio();
+
+      if (this.isInviter) { //disallow calls if creator is not streaming
+        console.log('isInviter is true')
+
+        this.dataService.sendMessage({msgType: 'send-user-data', msg: '', sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
+        // viewer is calling creator
+        this.call();
+      }
+    });
+  }
 
   async call(): Promise<void> {
     this.createPeerConnection();
@@ -88,22 +131,6 @@ export class VideoCallComponent implements AfterViewInit {
     this.router.navigate(['user/'+this.targetUser]);
   }
 
-  ngAfterViewInit(): void {
-    this.isInviter = this.route.snapshot.params['isInviter'] === '1';
-    console.log('isInviter is: '+this.isInviter)
-    this.dataService.connect();
-    this.addIncominMessageHandler();
-    this.requestMediaDevices().then(() => {
-      // this.startLocalVideo();
-      this.startLocalAudio();
-
-      if (this.isInviter) { //disallow calls if creator is not streaming
-        console.log('isInviter is true')
-        this.call();
-      }
-    });
-  }
-
   private addIncominMessageHandler(): void {
     this.dataService.connect();
 
@@ -128,6 +155,9 @@ export class VideoCallComponent implements AfterViewInit {
         case 'resume-video':
           this.handleResumeVideoMessage(msg);
           break;
+        case 'send-user-data':
+          this.handleUserDataMessage(msg);
+          break;
         default:
           console.log('unknown message of type ' + msg.msgType);
       }
@@ -135,6 +165,16 @@ export class VideoCallComponent implements AfterViewInit {
   }
 
   /* ########################  MESSAGE HANDLER  ################################## */
+
+  private handleUserDataMessage(msg: Message): void {
+    console.log('handle user data message');
+    console.log(msg);
+
+    console.log("Querying for user data...")
+
+    // get user data
+    this.graphql.queryUser(msg.sender_id, this.graphql.getUserData());
+  }
 
   private handleOfferMessage(msg: RTCSessionDescriptionInit, sender_id): void {
     console.log('handle incoming offer');

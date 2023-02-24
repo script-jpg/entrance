@@ -28,6 +28,7 @@ export class FooterContentComponent implements OnInit {
     this.graphql.getStreamerData().subscribe((streamerData) => {
       this.streamerData = streamerData;
       console.log("streamerData: " + JSON.stringify(streamerData));
+      localStorage.setItem("streamer_profile_pic", streamerData.profile_pic);
     });
 
   }

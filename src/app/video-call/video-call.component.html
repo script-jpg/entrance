@@ -5,11 +5,11 @@
         
         <div class="profile-pic-container">
             <div class="left box"  [ngClass]="{'center': !inCall}">
-                <img class="pfp" id="userProfilePic" *ngIf="!localVideoActive" src="https://i.imgur.com/1ZQ3w9q.jpg" alt="profile pic">
+                <img class="pfp" id="userProfilePic" *ngIf="!localVideoActive" [src]="user_profile_pic" alt="profile pic">
                 <video #local_video id="localVideo" [style.display]="localVideoActive ? 'block' : 'none'" [autoplay]="true" [muted]="true"></video>
             </div>
             <div class="right box">
-                <img class="pfp" id="creatorProfilePic" *ngIf="inCall && !remoteVideoActive" src="https://i.imgur.com/1ZQ3w9q.jpg" alt="profile pic">
+                <img class="pfp" id="creatorProfilePic" *ngIf="inCall && !remoteVideoActive" [src]="remote_profile_pic" alt="profile pic">
                 <video #received_video id="localVideo" [style.display]="inCall && remoteVideoActive ? 'block' : 'none'" [autoplay]="true"></video>
                 
             </div>

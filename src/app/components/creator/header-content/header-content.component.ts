@@ -35,6 +35,7 @@ export class HeaderContentComponent implements OnInit {
         console.log("user: "+user);
         this.isStreamer = user.is_streamer;
         this.profilePicSrc = user.profile_pic;
+        localStorage.setItem("user_profile_pic", user.profile_pic);
       });
 
   }
