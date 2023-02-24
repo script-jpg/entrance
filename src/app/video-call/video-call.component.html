@@ -18,8 +18,7 @@
         </div>
 
         <div class="button-container">
-            <button (click)="startLocalVideo()" [disabled]="localVideoActive">Start Webcam</button>
-            <button (click)="pauseLocalVideo()" [disabled]="!localVideoActive">Stop Webcam</button>
+            <button (click)="webcamHandler()" [innerHTML]="(localVideoActive) ? Start Webcam : Stop Webcam"></button>
             <button (click)="mute()" [innerHTML]="muteInnerHTML"></button>
             <!-- <button (click)="call()" [disabled]="inCall || !localVideoActive">Call</button> -->
             <button (click)="hangUp()" [disabled]="!inCall">HangUp</button>

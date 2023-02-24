@@ -77,8 +77,6 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     });
   }
 
-
-
   ngAfterViewInit(): void {
 
     // set remote profile pic
@@ -269,6 +267,14 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
         track.enabled = true;
       }
     });
+  }
+
+  webcamHandler(): void {
+    if (this.localVideoActive) {
+      this.pauseLocalVideo();
+    } else {
+      this.startLocalVideo();
+    }
   }
 
   startLocalVideo(): void {
