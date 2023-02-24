@@ -4,21 +4,22 @@
     <div class="footer">
         
         <div class="profile-pic-container">
-            <div class="left box">
-                <!-- <img class="pfp" id="userProfilePic" src="https://i.imgur.com/1ZQ3w9q.jpg" alt="profile pic"> -->
-                <video #local_video id="localVideo" [autoplay]="true" [muted]="true"></video>
+            <div class="left box"  [ngClass]="{'center': !inCall}">
+                <img class="pfp" id="userProfilePic" *ngIf="!localVideoActive" src="https://i.imgur.com/1ZQ3w9q.jpg" alt="profile pic">
+                <video #local_video id="localVideo" [style.display]="localVideoActive ? 'block' : 'none'" [autoplay]="true" [muted]="true"></video>
             </div>
             <div class="right box">
-                <video #received_video id="localVideo" [autoplay]="true"></video>
-                <!-- <img class="pfp" id="creatorProfilePic" src="https://i.imgur.com/1ZQ3w9q.jpg" alt="profile pic"> -->
+                <img class="pfp" id="creatorProfilePic" *ngIf="inCall && !remoteVideoActive" src="https://i.imgur.com/1ZQ3w9q.jpg" alt="profile pic">
+                <video #received_video id="localVideo" [style.display]="inCall && remoteVideoActive ? 'block' : 'none'" [autoplay]="true"></video>
+                
             </div>
             
             
         </div>
 
         <div class="button-container">
-            <!-- <button (click)="startLocalVideo()" [disabled]="localVideoActive">Start Local</button>
-            <button (click)="pauseLocalVideo()" [disabled]="!localVideoActive">Stop Local</button> -->
+            <button (click)="startLocalVideo()" [disabled]="localVideoActive">Start Local</button>
+            <button (click)="pauseLocalVideo()" [disabled]="!localVideoActive">Stop Local</button>
             <button (click)="mute()" [innerHTML]="muteInnerHTML"></button>
             <!-- <button (click)="call()" [disabled]="inCall || !localVideoActive">Call</button> -->
             <button (click)="hangUp()" [disabled]="!inCall">HangUp</button>

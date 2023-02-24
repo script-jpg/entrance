@@ -51,6 +51,17 @@
     bottom: 3rem;
 }
 
+.center {
+    // absolute center
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 //profile-pic-container in bottom left corner
 .profile-pic-container {
     gap: 0.5rem;
@@ -82,7 +93,7 @@ button {
 }
 
 .box {
-    border: 1px solid black;
+    // border: 1px solid black;
     display: flex;
     flex-direction: column;
     justify-content: center;

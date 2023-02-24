@@ -48,9 +48,11 @@ export class VideoCallComponent implements AfterViewInit {
 
   private isInviter: boolean = false;
 
+
+
   inCall = false;
   localVideoActive = false;
-
+  remoteVideoActive = false;
 
   constructor(
     private dataService: WebsocketService, 
@@ -92,7 +94,9 @@ export class VideoCallComponent implements AfterViewInit {
     this.dataService.connect();
     this.addIncominMessageHandler();
     this.requestMediaDevices().then(() => {
-      this.startLocalVideo();
+      // this.startLocalVideo();
+      this.startLocalAudio();
+
       if (this.isInviter) { //disallow calls if creator is not streaming
         console.log('isInviter is true')
         this.call();
@@ -117,6 +121,12 @@ export class VideoCallComponent implements AfterViewInit {
           break;
         case 'ice-candidate':
           this.handleICECandidateMessage(msg.msg);
+          break;
+        case 'pause-video':
+          this.handlePauseVideoMessage(msg);
+          break;
+        case 'resume-video':
+          this.handleResumeVideoMessage(msg);
           break;
         default:
           console.log('unknown message of type ' + msg.msgType);
@@ -212,12 +222,25 @@ export class VideoCallComponent implements AfterViewInit {
     }
   }
 
+  startLocalAudio(): void {
+    console.log('starting local stream');
+    this.localStream.getTracks().forEach(track => {
+      if (track.kind === 'audio') {
+        track.enabled = true;
+      }
+    });
+  }
+
   startLocalVideo(): void {
     console.log('starting local stream');
     this.localStream.getTracks().forEach(track => {
-      track.enabled = true;
+      if (track.kind === 'video') {
+        track.enabled = true;
+      }
     });
     this.localVideo.nativeElement.srcObject = this.localStream;
+
+    this.dataService.sendMessage({msgType: 'resume-video', msg: null, sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
 
     this.localVideoActive = true;
   }
@@ -229,7 +252,19 @@ export class VideoCallComponent implements AfterViewInit {
     });
     this.localVideo.nativeElement.srcObject = undefined;
 
+    this.dataService.sendMessage({msgType: 'pause-video', msg: null, sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
+
     this.localVideoActive = false;
+  }
+
+  private handleResumeVideoMessage(msg: Message): void {
+    console.log('handle resume video message from: '+msg.sender_id);
+    this.remoteVideoActive = true;
+  }
+
+  private handlePauseVideoMessage(msg: Message): void {
+    console.log('handle pause video message from: '+msg.sender_id);
+    this.remoteVideoActive = false;
   }
 
   private createPeerConnection(): void {
