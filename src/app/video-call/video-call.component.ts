@@ -288,7 +288,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
   pauseLocalVideo(): void {
     console.log('pause local stream');
     this.localStream.getTracks().forEach(track => {
-      track.enabled = false;
+      if (track.kind === 'video') track.enabled = false;
     });
     this.localVideo.nativeElement.srcObject = undefined;
 
