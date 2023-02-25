@@ -21,6 +21,8 @@ const mediaConstraints = {
   // video: {width: 160, height: 120}  //  4:3
 };
 
+let senders = [];
+
 const offerOptions = {
   offerToReceiveAudio: true,
   offerToReceiveVideo: true
@@ -79,6 +81,10 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
 
   ngAfterViewInit(): void {
 
+    this.init(false);
+  }
+
+  async init(webcam: boolean) {
     // set remote profile pic
     if (this.isInviter) this.remote_profile_pic = localStorage.getItem('streamer_profile_pic');
 
@@ -86,9 +92,9 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     console.log('isInviter is: '+this.isInviter)
     this.dataService.connect();
     this.addIncominMessageHandler();
-    this.requestMediaDevices().then(() => {
-      // this.startLocalVideo();
-      this.startLocalAudio();
+    await this.requestMediaDevices();
+    await this.requestScreenShare();
+    this.startLocalAudio();
 
       if (this.isInviter) { //disallow calls if creator is not streaming
         console.log('isInviter is true')
@@ -97,21 +103,32 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
         // viewer is calling creator
         this.call();
       }
-    });
   }
 
   async call(): Promise<void> {
     this.createPeerConnection();
 
+    console.log("in Call: ")
+    console.log(this.localStream.getTracks());
+
     // Add the tracks from the local stream to the RTCPeerConnection
     this.localStream.getTracks().forEach(
-      track => this.peerConnection.addTrack(track, this.localStream)
+      track => {
+        try {
+          this.peerConnection.addTrack(track, this.localStream)
+        } catch (err) {
+          console.log(err);
+        }
+        
+      }
     );
 
     try {
       const offer: RTCSessionDescriptionInit = await this.peerConnection.createOffer(offerOptions);
       // Establish the offer as the local peer's current description.
       await this.peerConnection.setLocalDescription(offer);
+
+      senders = this.peerConnection.getSenders();
 
       this.inCall = true;
 
@@ -120,6 +137,8 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
       this.handleGetUserMediaError(err);
     }
   }
+
+  
 
   hangUp(): void {
     console.log('hangup called');
@@ -156,6 +175,8 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
         case 'send-user-data':
           this.handleUserDataMessage(msg);
           break;
+
+
         default:
           console.log('unknown message of type ' + msg.msgType);
       }
@@ -163,6 +184,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
   }
 
   /* ########################  MESSAGE HANDLER  ################################## */
+
 
   private handleUserDataMessage(msg: Message): void {
     console.log('handle user data message');
@@ -249,6 +271,17 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     this.peerConnection.addIceCandidate(candidate).catch(this.reportError);
   }
 
+  private async requestScreenShare(): Promise<void> {
+    try {
+      this.localStream.addTrack((await navigator.mediaDevices.getDisplayMedia(mediaConstraints)).getTracks()[0]);
+      // pause all tracks
+      this.pauseLocalVideo();
+    } catch (e) {
+      console.error(e);
+      alert(`getDisplayMedia() error: ${e.name}`);
+    }
+  }
+
   private async requestMediaDevices(): Promise<void> {
     try {
       this.localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
@@ -279,16 +312,33 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
 
   startLocalVideo(): void {
     console.log('starting local stream');
-    this.localStream.getTracks().forEach(track => {
-      if (track.kind === 'video') {
-        track.enabled = true;
-      }
-    });
+    console.log('showing tracks')
+      this.localStream.getVideoTracks()[0].enabled = true;
+      this.localVideo.nativeElement.srcObject = this.localStream;
+
+      this.dataService.sendMessage({msgType: 'resume-video', msg: null, sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
+
+      this.localVideoActive = true;
+  }
+
+  videoTrack: MediaStreamTrack;
+  async startScreenShare(): Promise<void> {
+    console.log('starting screen share');
+    this.localStream.getVideoTracks()[1].enabled = true;
     this.localVideo.nativeElement.srcObject = this.localStream;
 
-    this.dataService.sendMessage({msgType: 'resume-video', msg: null, sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
+    this.dataService.sendMessage({msgType: 'screen-share', msg: null, sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
 
     this.localVideoActive = true;
+    
+  }
+
+  screenShareHandler(): void {
+    if (this.localVideoActive) {
+      this.pauseLocalVideo();
+    } else {
+      this.startScreenShare();
+    }
   }
 
   pauseLocalVideo(): void {
@@ -321,7 +371,21 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     this.peerConnection.oniceconnectionstatechange = this.handleICEConnectionStateChangeEvent;
     this.peerConnection.onsignalingstatechange = this.handleSignalingStateChangeEvent;
     this.peerConnection.ontrack = this.handleTrackEvent;
+    // this.peerConnection.onnegotiationneeded = this.handleNegotiationNeededEvent;
   }
+
+  // private async handleNegotiationNeededEvent() {
+  //   this.peerConnection
+  //   const offer: RTCSessionDescriptionInit = await this.peerConnection.createOffer(offerOptions);
+  //   console.log('created offer');
+  //   console.log(offer);
+  //   await this.peerConnection.setLocalDescription(offer);
+  //   console.log('set local description');
+  //   this.dataService.sendMessage({msgType: 'offer', msg: offer, sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
+
+  // }
+
+
 
   private closeVideoCall(): void {
     console.log('Closing call');
@@ -408,6 +472,8 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
         break;
     }
   }
+
+  called = false;
 
   private handleTrackEvent = (event: RTCTrackEvent) => {
     console.log('handle track event');
