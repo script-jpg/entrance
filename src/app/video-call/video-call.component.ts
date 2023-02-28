@@ -31,6 +31,7 @@ const offerOptions = {
 
 let webcamActive = false;
 let screenShareActive = false;
+let webcamTrack;
 const onEndedChange = new BehaviorSubject(0);
 
 
@@ -47,12 +48,17 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
 
   userData: User | null = null;
 
+
   get isWebCamActive(): boolean {
     return webcamActive;
   }
 
   get isScreenShareActive(): boolean {
     return screenShareActive;
+  }
+
+  get screenShareDisabled(): boolean {
+    return webcamActive || screenShareActive;
   }
   
 
@@ -101,7 +107,11 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
       // use this if so that we don't pause local video initially
       // see https://www.learnrxjs.io/learn-rxjs/subjects/behaviorsubject
       console.log('onEndedChange recieved')
+      const shareScreenTrack = this.localStream.getVideoTracks()[0]
+      this.localStream.removeTrack(shareScreenTrack);
+      this.localStream.addTrack(webcamTrack);
       if (val) this.pauseLocalVideo();
+      console.log('ScreenShareDisabled: ',this.screenShareDisabled);
     });
   }
 
@@ -342,7 +352,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
 
   async requestScreenShare(): Promise<void> {
     try {
-      const track = this.localStream.getVideoTracks()[0];
+      webcamTrack = this.localStream.getVideoTracks()[0];
       await navigator.mediaDevices.getDisplayMedia().then(stream => {
         // get the screen track
         let videoTrack = stream.getVideoTracks()[0];
@@ -350,18 +360,34 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
           return s.track.kind == videoTrack.kind;
         });
         sender.replaceTrack(videoTrack);
+
+        // replace local video source
+
+        this.localStream.removeTrack(webcamTrack);
+        videoTrack.enabled = true;
+        this.localStream.addTrack(videoTrack);
+
+        this.localVideo.nativeElement.srcObject = this.localStream;
+
+        screenShareActive = true;
+
+        this.dataService.sendMessage({msgType: 'resume-video', msg: null, sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
+
         videoTrack.onended = function () {
           // Problem: we do not have access to this.* class functions in this block
           // we need a way of alerting our class to call a class function on this onended event
           // Crude Solution: Use a BehaviourSubject from Rxjs and just subscribe to it in oninit (please change if you have a more elegant/better solution)
           onEndedChange.next(1);
 
+          screenShareActive = false;
+
           // re-use the old video stream track after screen sharing track has ended
-          sender.replaceTrack(track);
+          sender.replaceTrack(webcamTrack);
         }
       });
     } catch (e) {
       console.error(e);
+      screenShareActive = false;
       // alert(`getDisplayMedia() error: ${e.name}`);
     }
 
@@ -371,8 +397,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     // replace video track with screen share
     try {
       await this.requestScreenShare();
-      screenShareActive = true;
-      this.dataService.sendMessage({msgType: 'resume-video', msg: null, sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
+      
 
       // add audio track to local stream
 

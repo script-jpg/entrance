@@ -19,7 +19,7 @@
 
         <div class="button-container">
             <button (click)="webcamHandler()" [disabled]="isScreenShareActive" [innerHTML]="(isWebCamActive) ? 'Stop Webcam' : 'Start Webcam'"></button>
-            <button (click)="screenShareHandler()" [disabled]="isWebCamActive" [innerHTML]="(isScreenShareActive) ? 'Stop ScreenShare' : 'Start ScreenShare'"></button>
+            <button (click)="screenShareHandler()" [disabled]="screenShareDisabled">Start ScreenShare</button>
             <button (click)="mute()" [innerHTML]="muteInnerHTML"></button>
             <!-- <button (click)="call()" [disabled]="inCall || !localVideoActive">Call</button> -->
             <button (click)="hangUp()" [disabled]="!inCall">HangUp</button>
