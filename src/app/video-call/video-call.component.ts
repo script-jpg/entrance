@@ -9,6 +9,7 @@ import { AfterViewInit } from '@angular/core';
 import { WebsocketService } from '../services/websocket.service';
 import { Message } from '../types/message';
 import { User, GraphqlService } from '../services/graphql.service';
+import { BehaviorSubject } from 'rxjs';
 
 export const ENV_RTCPeerConfiguration = environment.RTCPeerConfiguration;
 
@@ -28,6 +29,9 @@ const offerOptions = {
   offerToReceiveVideo: true
 };
 
+let webcamActive = false;
+let screenShareActive = false;
+const onEndedChange = new BehaviorSubject(0);
 
 
 @Component({
@@ -42,6 +46,14 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
   muteInnerHTML: string = 'Mute';
 
   userData: User | null = null;
+
+  get isWebCamActive(): boolean {
+    return webcamActive;
+  }
+
+  get isScreenShareActive(): boolean {
+    return screenShareActive;
+  }
   
 
   @ViewChild('local_video') localVideo: ElementRef;
@@ -53,13 +65,16 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
 
   private isInviter: boolean = false;
 
-  // user_profile_pic = JSON.parse(localStorage.getItem('userData')).profile_pic;
+  isLocalVideoActive(): boolean {
+    return webcamActive || screenShareActive;
+  }
+
   user_profile_pic = localStorage.getItem('user_profile_pic');
   remote_profile_pic: string = '';
 
 
   inCall = false;
-  localVideoActive = false;
+  
   remoteVideoActive = false;
 
   constructor(
@@ -72,10 +87,21 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     this.user_profile_pic = localStorage.getItem('user_profile_pic');
     this.remote_profile_pic = localStorage.getItem('streamer_profile_pic');
 
+
+    // We subscribe to the getUserData() subject so that we can get information about the caller
+    // if we are the streamer
     this.graphql.getUserData().subscribe((user: any) => {
       console.log("Recieved user-data:");
       console.log(user);
       this.remote_profile_pic = user.profile_pic;
+    });
+
+    // we subscribe to onended change so we can call this.pauseLocalVideo() when the value is changed
+    onEndedChange.subscribe((val: any) => {
+      // use this if so that we don't pause local video initially
+      // see https://www.learnrxjs.io/learn-rxjs/subjects/behaviorsubject
+      console.log('onEndedChange recieved')
+      if (val) this.pauseLocalVideo();
     });
   }
 
@@ -89,7 +115,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     this.dataService.connect();
     this.addIncominMessageHandler();
     this.requestMediaDevices().then(() => {
-      // this.startLocalVideo();
+      // this.startWebcam();
       this.startLocalAudio();
 
       if (this.isInviter) { //disallow calls if creator is not streaming
@@ -143,6 +169,9 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     this.router.navigate(['user/'+this.targetUser]);
   }
 
+  // addIncominMessageHandler()
+  // Handles incoming messages based on their msgType
+  // in each case, it calls a handler in this file
   private addIncominMessageHandler(): void {
     this.dataService.connect();
 
@@ -199,7 +228,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
 
     if (!this.localStream) {
       
-      this.startLocalVideo();
+      this.startWebcam();
     }
 
     this.peerConnection.setRemoteDescription(new RTCSessionDescription(msg))
@@ -284,56 +313,56 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
   }
 
   webcamHandler(): void {
-    if (this.localVideoActive) {
+    if (webcamActive) {
       this.pauseLocalVideo();
     } else {
-      this.startLocalVideo();
+      this.startWebcam();
     }
   }
 
-  startLocalVideo(): void {
+  startWebcam(): void {
     console.log('starting local stream');
     console.log('showing tracks')
-      this.localStream.getTracks().forEach(track => {
-        
-        
-        if (track.kind === 'video') {
-          console.log(track);
-          track.enabled = true;
-        }
-      });
-      this.localVideo.nativeElement.srcObject = this.localStream;
+    this.localStream.getTracks().forEach(track => {
+  
+      if (track.kind === 'video') {
+        console.log(track);
+        track.enabled = true;
+      }
 
-      this.dataService.sendMessage({msgType: 'resume-video', msg: null, sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
+    });
+    this.localVideo.nativeElement.srcObject = this.localStream;
 
-      this.localVideoActive = true;
+    this.dataService.sendMessage({msgType: 'resume-video', msg: null, sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
+
+    webcamActive = true;
   }
 
   videoTrack: MediaStreamTrack;
 
   async requestScreenShare(): Promise<void> {
     try {
-      // const screenShareStream = await navigator.mediaDevices.getDisplayMedia(mediaConstraints);
-      // const stream = screenShareStream.getTracks()[0];
-      // let rtpSender = this.peerConnection.addTrack(, screenShareStream);
-      // rtpSender.replaceTrack(screenShareStream.getTracks()[0]);
-      // // pause all tracks
-      // this.pauseLocalVideo();
       const track = this.localStream.getVideoTracks()[0];
       await navigator.mediaDevices.getDisplayMedia().then(stream => {
-            // localStream = stream;
-            let videoTrack = stream.getVideoTracks()[0];
-            var sender = senders.find(function(s) {
-                return s.track.kind == videoTrack.kind;
-            });
-            sender.replaceTrack(videoTrack);
-            videoTrack.onended = function(){
-                sender.replaceTrack(track);
-            }
+        // get the screen track
+        let videoTrack = stream.getVideoTracks()[0];
+        var sender = senders.find(function (s) {
+          return s.track.kind == videoTrack.kind;
         });
+        sender.replaceTrack(videoTrack);
+        videoTrack.onended = function () {
+          // Problem: we do not have access to this.* class functions in this block
+          // we need a way of alerting our class to call a class function on this onended event
+          // Crude Solution: Use a BehaviourSubject from Rxjs and just subscribe to it in oninit (please change if you have a more elegant/better solution)
+          onEndedChange.next(1);
+
+          // re-use the old video stream track after screen sharing track has ended
+          sender.replaceTrack(track);
+        }
+      });
     } catch (e) {
       console.error(e);
-      alert(`getDisplayMedia() error: ${e.name}`);
+      // alert(`getDisplayMedia() error: ${e.name}`);
     }
 
   }
@@ -341,11 +370,9 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
   async startScreenShare(): Promise<void> {
     // replace video track with screen share
     try {
-      // this.peerConnection.getTransceivers().forEach(transceiver => {
-      //   transceiver.stop();
-      // });
-
       await this.requestScreenShare();
+      screenShareActive = true;
+      this.dataService.sendMessage({msgType: 'resume-video', msg: null, sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
 
       // add audio track to local stream
 
@@ -362,13 +389,16 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
   }
 
   screenShareHandler(): void {
-    if (this.localVideoActive) {
+    if (screenShareActive) {
       this.pauseLocalVideo();
     } else {
       this.startScreenShare();
     }
   }
 
+  // pauseLocalVideo()
+  // sets webcamActive and screenShareActive to false
+  // sends a websocket message to the other user so that they set their remoteVideoActive to false
   pauseLocalVideo(): void {
     console.log('pause local stream');
     this.localStream.getTracks().forEach(track => {
@@ -378,7 +408,8 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
 
     this.dataService.sendMessage({msgType: 'pause-video', msg: null, sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
 
-    this.localVideoActive = false;
+    webcamActive = false;
+    screenShareActive = false;
   }
 
   private handleResumeVideoMessage(msg: Message): void {

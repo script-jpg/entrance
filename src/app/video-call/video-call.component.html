@@ -5,8 +5,8 @@
         
         <div class="profile-pic-container">
             <div class="left box"  [ngClass]="{'center': !inCall}">
-                <img class="pfp" id="userProfilePic" *ngIf="!localVideoActive" [src]="user_profile_pic" alt="profile pic">
-                <video #local_video id="localVideo" [style.display]="localVideoActive ? 'block' : 'none'" [autoplay]="true" [muted]="true"></video>
+                <img class="pfp" id="userProfilePic" *ngIf="!isLocalVideoActive()" [src]="user_profile_pic" alt="profile pic">
+                <video #local_video id="localVideo" [style.display]="isLocalVideoActive() ? 'block' : 'none'" [autoplay]="true" [muted]="true"></video>
             </div>
             <div class="right box">
                 <img class="pfp" id="creatorProfilePic" *ngIf="inCall && !remoteVideoActive" [src]="remote_profile_pic" alt="profile pic">
@@ -18,8 +18,8 @@
         </div>
 
         <div class="button-container">
-            <button (click)="webcamHandler()" [innerHTML]="(localVideoActive) ? 'Stop Webcam' : 'Start Webcam'"></button>
-            <button (click)="screenShareHandler()" [innerHTML]="(localVideoActive) ? 'Stop ScreenShare' : 'Start ScreenShare'"></button>
+            <button (click)="webcamHandler()" [disabled]="isScreenShareActive" [innerHTML]="(isWebCamActive) ? 'Stop Webcam' : 'Start Webcam'"></button>
+            <button (click)="screenShareHandler()" [disabled]="isWebCamActive" [innerHTML]="(isScreenShareActive) ? 'Stop ScreenShare' : 'Start ScreenShare'"></button>
             <button (click)="mute()" [innerHTML]="muteInnerHTML"></button>
             <!-- <button (click)="call()" [disabled]="inCall || !localVideoActive">Call</button> -->
             <button (click)="hangUp()" [disabled]="!inCall">HangUp</button>
