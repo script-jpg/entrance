@@ -64,6 +64,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
 
   @ViewChild('local_video') localVideo: ElementRef;
   @ViewChild('received_video') remoteVideo: ElementRef;
+  @ViewChild('muteButton') muteButton: ElementRef;
 
   private peerConnection: RTCPeerConnection;
 
@@ -112,6 +113,13 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
       this.localStream.addTrack(webcamTrack);
       if (val) this.pauseLocalVideo();
       console.log('ScreenShareDisabled: ',this.screenShareDisabled);
+
+
+      // Works but ugly... fixes problem button status are not updated
+      this.muteButton.nativeElement.click(); 
+      this.muteButton.nativeElement.click();
+      // see if this refreshes the context
+      // it does but not a great solution
     });
   }
 
@@ -274,6 +282,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
       this.dataService.sendMessage({msgType: 'answer', msg: this.peerConnection.localDescription, sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
 
       this.inCall = true;
+      senders = this.peerConnection.getSenders();
 
     }).catch(this.handleGetUserMediaError);
   }
@@ -377,9 +386,8 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
           // Problem: we do not have access to this.* class functions in this block
           // we need a way of alerting our class to call a class function on this onended event
           // Crude Solution: Use a BehaviourSubject from Rxjs and just subscribe to it in oninit (please change if you have a more elegant/better solution)
-          onEndedChange.next(1);
 
-          screenShareActive = false;
+          onEndedChange.next(1);
 
           // re-use the old video stream track after screen sharing track has ended
           sender.replaceTrack(webcamTrack);
