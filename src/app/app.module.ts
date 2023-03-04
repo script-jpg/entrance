@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { NbIconModule } from '@nebular/theme';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent, SafePipe } from './app.component';
@@ -18,6 +19,7 @@ import { OnboardModalComponent } from './components/onboard-modal/onboard-modal.
 import { FormsModule } from '@angular/forms';
 import { HeaderContentComponent } from './components/creator/header-content/header-content.component';
 import { CreatorPageComponent } from './creator-page/creator-page.component';
+import { VideoCallComponent } from './video-call/video-call.component';
 
 
 
@@ -32,7 +34,8 @@ import { CreatorPageComponent } from './creator-page/creator-page.component';
     OnboardModalComponent,
     HeaderContentComponent,
     CreatorPageComponent,
-    SafePipe
+    SafePipe,
+    VideoCallComponent
   ],
   imports: [
     BrowserModule,
@@ -45,6 +48,7 @@ import { CreatorPageComponent } from './creator-page/creator-page.component';
     MatSliderModule,
     NbDialogModule.forRoot(),
     OAuthModule.forRoot(),
+    NbIconModule,
     HttpClientModule,
     FormsModule,
     NbInputModule,

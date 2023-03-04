@@ -75,6 +75,8 @@ export class CreatorPageComponent implements OnInit {
       googleApi.userProfileSubject.subscribe((userProfile) => {
         const user_id = userProfile.info.sub;
         console.log("user_id: " + user_id);
+        localStorage.setItem("user_id", user_id);
+        localStorage.setItem("user_profile_pic", userProfile.info.picture);
         this.graphqlService.getIsNewUser().subscribe((isNewUser) => {
           if (isNewUser) {
             this.open();
@@ -98,12 +100,12 @@ export class CreatorPageComponent implements OnInit {
 
   setIsHoverOnFooter(): void {
     this.isHoverOnFooter = true;
-    console.log("isHoverOnFooter: " + this.isHoverOnFooter);
+    // console.log("isHoverOnFooter: " + this.isHoverOnFooter);
   }
 
   setNotHoverOnFooter(): void {
     this.isHoverOnFooter = false;
-    console.log("isHoverOnFooter: " + this.isHoverOnFooter);
+    // console.log("isHoverOnFooter: " + this.isHoverOnFooter);
   }
 
 }

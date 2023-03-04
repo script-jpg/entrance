@@ -1,0 +1,100 @@
+// Have localVideo and recievedVideo side by side
+
+#localVideo {
+    z-index: 1;
+    // Position the local video in the bottom right corner
+    // position: absolute;
+    // bottom: 1rem;
+    // right: 0;
+    // Size the local video to 25% of the screen
+    width: 10rem;
+    height: 10rem;
+
+}
+
+#videoStream {
+    z-index: 0;
+    height: 100%;
+    width: 100vw;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+}
+
+#receivedVideo {
+    width: 50%;
+    height: 100%;
+    float: right;
+
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+}
+
+.footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    z-index: 1;
+}
+
+// Button Container in the bottom center
+.button-container {
+    // Put items in the bottom center
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 3rem;
+}
+
+.center {
+    // absolute center
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+//profile-pic-container in bottom left corner
+.profile-pic-container {
+    gap: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 100vw;
+    height: 30rem;
+}
+
+// pfp is circular
+.pfp {
+    border-radius: 50%;
+    width: 10rem;
+    height: 10rem;
+}
+
+button {
+    text-align: center;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+.box {
+    // border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}

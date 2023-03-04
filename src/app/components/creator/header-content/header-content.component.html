@@ -13,7 +13,7 @@
                 <nb-option (click)="handleSelect('Log out')">Log out</nb-option>
                 
             </nb-select>
-            <button nbButton size="tiny" *ngIf="isStreamer" id="setup">Stream 🚀</button>
+            <button nbButton (click)="startStream()" size="tiny" *ngIf="isStreamer" id="setup">Stream 🚀</button>
             <img class="pfp" [src]="profilePicSrc" alt="profile image">
 
         </div>
