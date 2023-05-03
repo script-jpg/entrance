@@ -5,6 +5,11 @@
 export const environment = {
   production: false,
   wsLink: 'wss://4o15cnzf6e.execute-api.us-east-2.amazonaws.com/production',
+  buyCallLink: 'https://xgntrw99y4.execute-api.us-east-2.amazonaws.com',
+  endCallLink: 'https://3whkvnh0bf.execute-api.us-east-2.amazonaws.com',
+  setCreatorOnlineLink: 'https://1atecn6072.execute-api.us-east-2.amazonaws.com',
+  endStreamLink: 'https://s9gk8af56f.execute-api.us-east-2.amazonaws.com',
+
   RTCPeerConfiguration: {
     iceServers: [
       {
