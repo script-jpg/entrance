@@ -4,6 +4,7 @@ import {GraphqlService} from '../../../services/graphql.service';
 import defaultPfp from '../../../default-img.json'
 import { NbGlobalPhysicalPosition, NbToastrService } from '@nebular/theme';
 import { Router } from '@angular/router';
+import { CallQueueService } from 'src/app/services/call-queue.service';
 
 @Component({
   selector: 'app-header-content',
@@ -26,7 +27,8 @@ export class HeaderContentComponent implements OnInit {
   constructor(
     public googleApi: GoogleApiService, 
     graphqlService: GraphqlService,
-    private router: Router
+    private router: Router,
+    private callQueueService: CallQueueService
     ) {
 
       // this.showToast(this.positions.TOP_RIGHT, "Logged in")a;
@@ -56,7 +58,12 @@ export class HeaderContentComponent implements OnInit {
 
   startStream() {
     console.log("start stream");
-    this.router.navigate(['call/0']);
+    this.callQueueService.setCreatorOnline(localStorage.getItem('user_id'));
+    // wait for 10 seconds
+    // setTimeout(() => {
+    //   this.router.navigate(['call/0']);
+    // }, 15000);
+
   }
 
 }
