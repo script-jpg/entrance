@@ -108,18 +108,22 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
       // use this if so that we don't pause local video initially
       // see https://www.learnrxjs.io/learn-rxjs/subjects/behaviorsubject
       console.log('onEndedChange recieved')
-      const shareScreenTrack = this.localStream.getVideoTracks()[0]
-      this.localStream.removeTrack(shareScreenTrack);
-      this.localStream.addTrack(webcamTrack);
-      if (val) this.pauseLocalVideo();
-      console.log('ScreenShareDisabled: ',this.screenShareDisabled);
+      if (this.localStream != null) {
+        const shareScreenTrack = this.localStream.getVideoTracks()[0]
+        this.localStream.removeTrack(shareScreenTrack);
+        this.localStream.addTrack(webcamTrack);
+        if (val) this.pauseLocalVideo();
+        console.log('ScreenShareDisabled: ',this.screenShareDisabled);
+  
+  
+        // Works but ugly... fixes problem button status are not updated
+        this.muteButton.nativeElement.click(); 
+        this.muteButton.nativeElement.click();
+        // see if this refreshes the context
+        // it does but not a great solution
 
+      }
 
-      // Works but ugly... fixes problem button status are not updated
-      this.muteButton.nativeElement.click(); 
-      this.muteButton.nativeElement.click();
-      // see if this refreshes the context
-      // it does but not a great solution
     });
   }
 

@@ -36,6 +36,7 @@ export class WebsocketService {
         // Called whenever there is a message from the server
         msg => {
           console.log('Received message of type: ' + msg.msgType);
+          console.log(msg);
           this.messagesSubject.next(msg);
         }
       );
