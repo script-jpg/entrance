@@ -20,6 +20,7 @@ import { FormsModule } from '@angular/forms';
 import { HeaderContentComponent } from './components/creator/header-content/header-content.component';
 import { CreatorPageComponent } from './creator-page/creator-page.component';
 import { VideoCallComponent } from './video-call/video-call.component';
+import { CallQueueUiComponent } from './call-queue-ui/call-queue-ui.component';
 
 
 
@@ -35,7 +36,8 @@ import { VideoCallComponent } from './video-call/video-call.component';
     HeaderContentComponent,
     CreatorPageComponent,
     SafePipe,
-    VideoCallComponent
+    VideoCallComponent,
+    CallQueueUiComponent
   ],
   imports: [
     BrowserModule,

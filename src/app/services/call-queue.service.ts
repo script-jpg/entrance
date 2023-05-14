@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { WebsocketService } from './websocket.service';
 
 
 @Injectable({
@@ -10,7 +11,9 @@ import { environment } from 'src/environments/environment';
 })
 export class CallQueueService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private dataService: WebsocketService) {
+    
+  }
 
   postDataObserver = {
     next: (response) => {
@@ -35,24 +38,22 @@ export class CallQueueService {
   
 
   public buyCall(creator_id: string, price: number, length: number): void {
-    const data = {
-      "creator_id": creator_id,
-      "user_id": localStorage.getItem('user_id'),
-      "price": price,
-      "length_in_minutes": length
-    }
+    const data = {"action":"buyCall","user_id":"user1","creator_id":creator_id,"price":price,"length_in_minutes":length}
     
-    this.postData(environment.buyCallLink, data).subscribe(this.postDataObserver);
+    // this.postData(environment.buyCallLink, data).subscribe(this.postDataObserver);
+    this.dataService.sendMessage(data);
     
   }
 
   public endCall(creator_id: string): void {
     const data = {
+      "action": "endCall",
       "creator_id": creator_id,
-      "user_id": localStorage.getItem('user_id')
+      // "user_id": localStorage.getItem('user_id')
+      "user_id":"user1"
     }
 
-    this.postData(environment.endCallLink, data).subscribe(this.postDataObserver);
+    this.dataService.sendMessage(data);
     
   }
 
@@ -61,7 +62,7 @@ export class CallQueueService {
       "creator_id": creator_id
     }
     
-    this.postData(environment.endStreamLink, data).subscribe(this.postDataObserver);
+    this.dataService.sendMessage(data);
     
   }
 

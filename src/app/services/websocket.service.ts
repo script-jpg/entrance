@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { environment } from 'src/environments/environment';
-import { Message } from '../types/message';
 import { Subject, Observable } from 'rxjs';
 
 
@@ -13,11 +12,12 @@ import { Subject, Observable } from 'rxjs';
 
 
 export class WebsocketService {
-  private user_id: string = localStorage.getItem('user_id');
-  private socket$: WebSocketSubject<Message>;
-  private messagesSubject: Subject<Message> = new Subject<Message>();
+  // private user_id: string = localStorage.getItem('user_id');
+  private user_id: string = "user1";
+  private socket$: WebSocketSubject<any>;
+  private messagesSubject: Subject<any> = new Subject<any>();
 
-  getMessages(): Observable<Message> {
+  getMessages(): Observable<any> {
     return this.messagesSubject.asObservable();
   }
   
@@ -42,12 +42,27 @@ export class WebsocketService {
     }
   }
 
-  sendMessage(message: Message): void {
+  sendMessage(message: any): void {
     console.log('Sending message of type: ' + message.msgType)
     this.socket$.next(message);
   }
 
-  public getNewWebSocket(): WebSocketSubject<Message> {
+  public sendBuyCallRequest(creator_id: string, price: number, length: number): void {
+    const data = {
+      "action": "buyCall",
+      "creator_id": "abc",
+      // "user_id": localStorage.getItem('user_id'),
+      "user_id":"user1",
+      "price": price,
+      "length_in_minutes": length
+    }
+    
+    // this.postData(environment.buyCallLink, data).subscribe(this.postDataObserver);
+    this.sendMessage(data);
+    
+  }
+
+  public getNewWebSocket(): WebSocketSubject<any> {
     return webSocket({
       url: environment.wsLink,
       openObserver: {
@@ -61,25 +76,7 @@ export class WebsocketService {
           this.connect();
         }
       }
-    })
-
-  
-
-}
-
-/* From https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Signaling_and_video_calling */
-
-      // if (value['action'] === "sendMessage") {
-      //   if (value['msgType'] === "video-offer") {
-      //     handleVideoOfferMsg(value);
-      //   } else if (value['msgType'] === "video-answer") {
-      //     handleVideoAnswerMsg(value);
-      //   } else if (value['msgType'] === "new-ice-candidate") {
-      //     handleNewICECandidateMsg(value);
-      //   } else if (value['msgType'] === "hang-up") {
-      //     closeVideoCall();
-      //   }
-      // }
+    })}
 
 }
 

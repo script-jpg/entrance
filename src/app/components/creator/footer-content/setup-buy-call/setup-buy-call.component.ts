@@ -12,11 +12,40 @@ const perMinCost: number = 30;
 })
 export class SetupBuyCallComponent implements OnInit {
 
+  confirmedCall: Subject<boolean> = new Subject<boolean>();
+
+  callQueue: Subject<any> = new Subject<any>();
+
   constructor(private router: Router, 
-    private callQueueService: CallQueueService,
     private webSocketService: WebsocketService) { }
 
   ngOnInit(): void {
+  }
+
+  ngAfterViewInit() {
+    this.webSocketService.connect();
+
+    this.webSocketService.getMessages().subscribe(msg => {
+      console.log("Received message: " + JSON.stringify(msg));
+      if (msg.msgType == "call_start") {
+        console.log("Received call_start message");
+        // wait 3 seconds for tesing purposes
+
+        setTimeout(() => {
+          console.log('Now ending call for testing purposes')
+          this.webSocketService.sendMessage({"action":"endCall","user_id":"user1","creator_id":"abc","cooldown_time":5});
+        }, 2000);
+      } else if (msg.msgType=="updateQueuePosition") {
+        console.log("Received updateQueuePosition message");
+        // wait 3 seconds for tesing purposes
+
+        console.log("Queue position: " + JSON.stringify(msg.call_queue[0]))
+
+        // send queue position to subject 
+        this.callQueue.next(msg.call_queue);
+
+      }
+    });
   }
 
   cost: number = perMinCost;
@@ -31,15 +60,11 @@ export class SetupBuyCallComponent implements OnInit {
   onConfirmBuyCall() {
     // this.router.navigate(['call/1']);
     console.log('Sending buy call request');
-    this.callQueueService.buyCall(localStorage.getItem('creator_id'), this.cost, this.minutes);
-    this.webSocketService.getMessages().subscribe(msg => {
-      if (msg.msgType == "call_start") {
-        console.log("Received call_start message");
+    this.confirmedCall.next(true);
 
-        console.log('Now ending call for testing purposes')
-        this.callQueueService.endCall(localStorage.getItem('creator_id'));
-      }
-    });
+
+    this.webSocketService.sendMessage({"action":"buyCall","user_id":"user1","creator_id":"abc","price":"25","length_in_minutes":1});
+
 
   }
 
