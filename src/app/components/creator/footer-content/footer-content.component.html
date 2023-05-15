@@ -1,21 +1,21 @@
 <div class="footer-content">
-<app-call-queue-ui *ngIf="callConfirmed"></app-call-queue-ui>
+  <app-call-queue-ui *ngIf="callConfirmed"></app-call-queue-ui>
 
-<div class="footer" *ngIf="!callConfirmed">
-  <div class="footer-content" *ngIf="(!isHoveringOnFooter || isLoggedIn) && !isSigningIn">
+  <div class="footer" *ngIf="!callConfirmed">
+    <div class="footer-content" *ngIf="(!isHoveringOnFooter || isLoggedIn) && !isSigningIn">
 
-    <div class="profile">
-      <img class="pfp" [src]="streamerData?.profile_pic" alt="profile image">
-      <p class="username">{{streamerData?.username}}</p>
+      <div class="profile">
+        <img class="pfp" [src]="streamerData?.profile_pic" alt="profile image">
+        <p class="username">{{streamerData?.username}}</p>
+      </div>
+      
+      <app-button (clickEvent)="onBuyCall()" text="Buy Call"></app-button>
+      
     </div>
+
+    <app-button (clickEvent)="onLogin()" text="sign in to buy call" *ngIf="isHoveringOnFooter && !isLoggedIn"></app-button>
     
-    <app-button (clickEvent)="onBuyCall()" text="Buy Call"></app-button>
-    
+    <app-setup-buy-call *ngIf="buyCallActive"></app-setup-buy-call>
+
   </div>
-
-  <app-button (clickEvent)="onLogin()" text="sign in to buy call" *ngIf="isHoveringOnFooter && !isLoggedIn"></app-button>
-  
-  <app-setup-buy-call *ngIf="buyCallActive"></app-setup-buy-call>
-
-</div>
 </div>
