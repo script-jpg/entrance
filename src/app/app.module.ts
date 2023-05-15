@@ -12,6 +12,8 @@ import { ButtonComponent } from './components/button/button.component';
 import { NbButtonModule, NbInputModule, NbCheckboxModule, NbSelectModule, NbCardModule, NbToastrModule} from '@nebular/theme';
 import { SetupBuyCallComponent } from './components/creator/footer-content/setup-buy-call/setup-buy-call.component';
 import { MatSliderModule } from '@angular/material/slider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { AuthModalComponent } from './components/auth-modal/auth-modal.component';
 import { HttpClientModule } from '@angular/common/http';
 import { OAuthModule } from 'angular-oauth2-oidc';
@@ -40,6 +42,8 @@ import { CallQueueUiComponent } from './call-queue-ui/call-queue-ui.component';
     CallQueueUiComponent
   ],
   imports: [
+    MatFormFieldModule,
+    MatInputModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,

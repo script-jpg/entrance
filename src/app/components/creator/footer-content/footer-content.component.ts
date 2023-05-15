@@ -5,6 +5,7 @@ import { NbDialogService, NbDialogRef } from '@nebular/theme';
 import { AuthModalComponent } from '../../auth-modal/auth-modal.component';
 import { GoogleApiService, UserInfo } from 'src/app/services/google-api.service';
 import { GraphqlService, User } from 'src/app/services/graphql.service';
+import { CallQueueService } from 'src/app/services/call-queue.service';
 
 @Component({
   selector: 'app-footer-content',
@@ -22,6 +23,7 @@ export class FooterContentComponent implements OnInit {
   isSigningIn: boolean = false;
 
   streamerData: User | null = null;
+  callConfirmed: boolean = true;
 
   ngOnInit(): void {
 
@@ -31,12 +33,17 @@ export class FooterContentComponent implements OnInit {
       localStorage.setItem("streamer_profile_pic", streamerData.profile_pic);
     });
 
+    this.callQueueService.getConfirmedCall().subscribe((callConfirmed) => {
+      this.callConfirmed = callConfirmed;
+    });
+
   }
 
   constructor(private uiService: UiService, 
     private dialogService: NbDialogService,
     googleApi: GoogleApiService,
-    private graphql: GraphqlService) {
+    private graphql: GraphqlService,
+    private callQueueService: CallQueueService) {
       localStorage.setItem("creator_id",this.creator_id);
 
       

@@ -1,1 +1,33 @@
-<p>call-queue-ui works!</p>
+<div class="body">
+
+
+<table>
+    <tbody>
+      <tr *ngFor="let item of callQueue" [ngClass]="{'highlighted': item.user_id === your_user_id}">
+        <td>{{item.rank}}</td>
+        <td>{{ item.user_id === this.your_user_id ? 'YOU' : item.user_id }}</td>
+        <td>${{item.price_per_minute}}/min</td>
+        <td>{{formatTime(item.aggregate_call_length)}}</td>
+        
+      </tr>
+    </tbody>
+</table>
+
+<div class="set-new-ppm">
+    <mat-slider min="1" max="1000" step="1" [(ngModel)]="sliderValue"></mat-slider>
+    <mat-form-field>
+      <input class="centered-text" matInput type="number" min="1" [(ngModel)]="sliderValue">
+    </mat-form-field>
+
+</div>
+
+<div class="buttons">
+    <button nbButton status="primary" size="small" (click)="resubmitPPM()">Re-Submit</button>
+    <button nbButton status="basic" size="small">Cancel</button>
+
+</div>
+
+
+
+
+</div>

@@ -10,7 +10,7 @@
   
     </nb-layout-column>
   
-    <nb-layout-footer [ngStyle]="{'height': buyCallActive ? '50%' : '21%' }"
+    <nb-layout-footer
     (mouseover)="setIsHoverOnFooter()" (mouseout)="setNotHoverOnFooter()">
       <app-footer-content [creator_id]="creator_id"  [isHoveringOnFooter]="isHoverOnFooter"></app-footer-content>
       

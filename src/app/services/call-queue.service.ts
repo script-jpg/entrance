@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { WebsocketService } from './websocket.service';
+import { Subject } from 'rxjs';
 
 
 @Injectable({
@@ -11,7 +12,43 @@ import { WebsocketService } from './websocket.service';
 })
 export class CallQueueService {
 
-  constructor(private http: HttpClient, private dataService: WebsocketService) {
+  confirmedCall: Subject<boolean> = new Subject<boolean>();
+
+  callQueue: Subject<any> = new Subject<any>();
+
+  public getCallQueue(): Observable<any> {
+    return this.callQueue.asObservable();
+  }
+
+  public getConfirmedCall(): Observable<boolean> {
+    return this.confirmedCall.asObservable();
+  }
+
+  constructor(private http: HttpClient, private webSocketService: WebsocketService) {
+    this.webSocketService.connect();
+
+    this.webSocketService.getMessages().subscribe(msg => {
+      console.log("Received message: " + JSON.stringify(msg));
+      if (msg.msgType == "call_start") {
+        console.log("Received call_start message");
+        // wait 3 seconds for tesing purposes
+
+        setTimeout(() => {
+          console.log('Now ending call for testing purposes')
+          this.webSocketService.sendMessage({"action":"endCall","user_id":"user1","creator_id":"abc","cooldown_time":5});
+        }, 2000);
+      } else if (msg.msgType=="updateQueuePosition") {
+        console.log("Received updateQueuePosition message");
+
+        // send queue position to subject 
+        this.callQueue.next(msg.call_queue);
+
+      }
+    });
+    
+  }
+
+  ngOnInit(): void {
     
   }
 
@@ -37,11 +74,14 @@ export class CallQueueService {
   }
   
 
-  public buyCall(creator_id: string, price: number, length: number): void {
-    const data = {"action":"buyCall","user_id":"user1","creator_id":creator_id,"price":price,"length_in_minutes":length}
+  public buyCall(creator_id: string, user_id: string, price: number, length: number): void {
+    this.confirmedCall.next(true);
+    const data = {"action":"buyCall","user_id":user_id,"creator_id":creator_id,"price":price,"length_in_minutes":length}
+
+    // this.webSocketService.connect();
     
     // this.postData(environment.buyCallLink, data).subscribe(this.postDataObserver);
-    this.dataService.sendMessage(data);
+    this.webSocketService.sendMessage(data);
     
   }
 
@@ -53,7 +93,7 @@ export class CallQueueService {
       "user_id":"user1"
     }
 
-    this.dataService.sendMessage(data);
+    this.webSocketService.sendMessage(data);
     
   }
 
@@ -62,7 +102,7 @@ export class CallQueueService {
       "creator_id": creator_id
     }
     
-    this.dataService.sendMessage(data);
+    this.webSocketService.sendMessage(data);
     
   }
 
