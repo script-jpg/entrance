@@ -79,7 +79,7 @@ export class GraphqlService{
     }`
     // console.log('Getting Streamer Settings');
     const headers = this.headers;
-    var res = this.http.post<any>('https://8cdfec44-3da0-4276-878b-298c404593d0-us-east1.apps.astra.datastax.com/api/graphql/entrance', body, {headers})
+    var res = this.http.post<any>('https://95190683-5f68-44bf-a587-897c5b2e623e-us-east-2.apps.astra.datastax.com/api/graphql/entrance', body, {headers})
     await lastValueFrom(res).then((res) => {
       // console.log(res.data);
       this.streamerSettings.next(res.data.streamer_settings_by_id.values[0]);
@@ -105,8 +105,10 @@ export class GraphqlService{
       }
     }`
     const headers = this.headers;
-    var res = this.http.post<any>('https://8cdfec44-3da0-4276-878b-298c404593d0-us-east1.apps.astra.datastax.com/api/graphql/entrance', body, {headers})
+    var res = this.http.post<any>('https://95190683-5f68-44bf-a587-897c5b2e623e-us-east-2.apps.astra.datastax.com/api/graphql/entrance', body, {headers})
     await lastValueFrom(res).then((res) => {
+
+      console.log("res data May 16: "+JSON.stringify(res))
       
       const isNewUser: boolean = res.data.user_by_id.values.length === 0;
       this.isNewUser.next(isNewUser);
@@ -200,7 +202,7 @@ export class GraphqlService{
         }
       }`
     const headers = this.headers;
-    var res = this.http.post<any>('https://8cdfec44-3da0-4276-878b-298c404593d0-us-east1.apps.astra.datastax.com/api/graphql/entrance', body, {headers})
+    var res = this.http.post<any>('https://95190683-5f68-44bf-a587-897c5b2e623e-us-east-2.apps.astra.datastax.com/api/graphql/entrance', body, {headers})
     return await lastValueFrom(res);
   }
 
@@ -215,7 +217,7 @@ export class GraphqlService{
       }
     }`
     const headers = this.headers;
-    var res = this.http.post<any>('https://8cdfec44-3da0-4276-878b-298c404593d0-us-east1.apps.astra.datastax.com/api/graphql/entrance', body, {headers})
+    var res = this.http.post<any>('https://95190683-5f68-44bf-a587-897c5b2e623e-us-east-2.apps.astra.datastax.com/api/graphql/entrance', body, {headers})
     return await lastValueFrom(res).then((res) => {
       console.log("updateConnectionId: " + res.data.user.value.user_id + " " + res.data.user.value.connection_id);
     });

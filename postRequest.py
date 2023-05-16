@@ -1,6 +1,6 @@
 import requests
 
-url = 'https://8cdfec44-3da0-4276-878b-298c404593d0-us-east1.apps.astra.datastax.com/api/graphql/entrance'
+url = 'https://95190683-5f68-44bf-a587-897c5b2e623e-us-east-2.apps.astra.datastax.com/api/graphql/entrance'
 token = "AstraCS:mMCfrZSKQxqpQlJRPqwKwLuZ:b08c279837481ab4371a03f7f177b601bacc75c85d38fde01fe07263b657d75c"
 headers = { 
     'Content-Type': 'application/graphql', 
