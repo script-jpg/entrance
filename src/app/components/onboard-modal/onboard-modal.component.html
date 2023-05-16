@@ -16,6 +16,16 @@
 
         <nb-checkbox (checkedChange)="toggleStreamer($event)">Are you a streamer? 🚀</nb-checkbox>
 
+        <div *ngIf="isStreamer">
+            <input type="text" nbInput name="ppm" placeholder="Minimum $Price/Minute for calls" ngModel>
+            <input type="text" nbInput name="cooldown_time" placeholder="Cooldown time (in seconds)" ngModel>
+            <nb-select placeholder="Select Platform Name" [(selected)]="platform_name">
+                <nb-option value="Youtube">Youtube</nb-option>
+                <nb-option value="Twitch">Twitch</nb-option>
+            </nb-select>
+            <input type="text" nbInput name="platform_id" placeholder="Platform Name" ngModel>
+        </div>
+
         <button nbButton>Submit <input type="submit" style="display:none" value="submit"> </button>
         
      </form>

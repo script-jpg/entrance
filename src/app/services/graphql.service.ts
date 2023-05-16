@@ -31,6 +31,8 @@ export class GraphqlService{
     'Content-Type': 'application/graphql', 
     'x-cassandra-token': AstraDBToken.token,
     'Accept': '*/*',
+    'Access-Control-Allow-Origin': '*',
+    
   };
 
   

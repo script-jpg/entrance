@@ -9,6 +9,11 @@ import {NbDialogRef, NbToastrService} from '@nebular/theme';
 })
 export class OnboardModalComponent implements OnInit {
 
+  platform_name: string = "";
+  platform_id: string = "";
+  cooldown_time: string = "";
+  ppm: string = "";
+
   constructor(
     private graphqlService: GraphqlService, 
     protected dialogRef: NbDialogRef<any>,
