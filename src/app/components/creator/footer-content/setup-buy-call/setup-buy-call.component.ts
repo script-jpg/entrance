@@ -2,27 +2,41 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { CallQueueService } from 'src/app/services/call-queue.service';
+import { GraphqlService } from 'src/app/services/graphql.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
 
-const perMinCost: number = 30;
+
 @Component({
   selector: 'app-setup-buy-call',
   templateUrl: './setup-buy-call.component.html',
   styleUrls: ['./setup-buy-call.component.scss']
 })
-export class SetupBuyCallComponent {
+export class SetupBuyCallComponent implements OnInit {
 
-  
+  perMinCost: number = 30;
 
   constructor(private router: Router, 
-    private callQueueService: CallQueueService) { }
+    private callQueueService: CallQueueService, private graphqlService: GraphqlService) { }
 
-  cost: number = perMinCost;
+  ngOnInit(): void {
+    this.graphqlService.getStreamerSettings().subscribe((value) => {
+      console.log("Streamer Settings: ")
+      console.log(value);
+      this.perMinCost = value['price_per_minute']
+      console.log('perMinCost: '+this.perMinCost);
+      this.cost = this.perMinCost;
+    });
+
+    this.graphqlService.queryStreamerSettings(localStorage.getItem("creator_id"));
+  }
+
+
+  cost: number;
   minutes: number = 1;
 
 
   pitch(event: any) {
-    this.cost = event.value * perMinCost;
+    this.cost = event.value * this.perMinCost;
     this.minutes = event.value;
   }
 

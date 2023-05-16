@@ -2,12 +2,15 @@ import { Injectable} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { lastValueFrom, observable, Subject } from 'rxjs';
 import AstraDBToken from '../AstraDBToken.json';
+import { Location } from '@angular/common';
+
 
 
 export interface StreamerSettings {
   user_id: string,
   cool_down_seconds: number,
-  platform_id: string,
+  platform_name: string,
+  streamer_platform_id: string,
   price_per_minute: number,
 }
 
@@ -37,7 +40,7 @@ export class GraphqlService{
 
   
 
-  constructor(http: HttpClient) { 
+  constructor(http: HttpClient, private location: Location) { 
     this.http = http;
   }
 
@@ -73,7 +76,8 @@ export class GraphqlService{
         values {
           user_id,
           cool_down_seconds,
-          platform_id,
+          platform_name,
+          streamer_platform_id,
           price_per_minute
         }
     
@@ -83,7 +87,7 @@ export class GraphqlService{
     const headers = this.headers;
     var res = this.http.post<any>('https://95190683-5f68-44bf-a587-897c5b2e623e-us-east-2.apps.astra.datastax.com/api/graphql/entrance', body, {headers})
     await lastValueFrom(res).then((res) => {
-      // console.log(res.data);
+      console.log(res.data);
       this.streamerSettings.next(res.data.streamer_settings_by_id.values[0]);
 
     });
@@ -181,6 +185,54 @@ export class GraphqlService{
       resolve(successUserId);
     });
     return myPromise;
+  }
+
+  async addNewStreamerSettings(platform_name: string, platform_id: string, cool_down_seconds: number, price_per_minute: any): Promise<string> {
+    // Convert price_per_minute to a number and then to a string with 2 decimal places
+    price_per_minute = Number(price_per_minute).toFixed(2);
+  
+    console.log('platform_name: ' + platform_name, 'platform_id: ' + platform_id, 'cool_down_seconds: ' + cool_down_seconds, 'price_per_minute: ' + price_per_minute);
+  
+    const user_id = sessionStorage.getItem('user_id');
+  
+    // Since addNewStreamerSettingsMutation expects price_per_minute to be a number,
+    // convert the string back to a number.
+    await this.addNewStreamerSettingsMutation(user_id, platform_name, platform_id, cool_down_seconds, Number(price_per_minute)).then((res) => {
+      console.log(JSON.stringify(res));
+      return res;
+    });
+  
+    const myPromise = new Promise<string>((resolve) => {
+      resolve("success");
+    });
+    return myPromise;
+  }
+  
+  
+
+  async addNewStreamerSettingsMutation(user_id: string, platform_name: string, platform_id: string, cool_down_seconds: number, price_per_minute: any) {
+    const body: any = `
+    mutation {
+      insertstreamer_settings_by_id(
+        value: { 
+          user_id: "${user_id}",
+          cool_down_seconds: ${cool_down_seconds},
+          platform_name: "${platform_name}",
+          streamer_platform_id: "${platform_id}",
+          price_per_minute: "${price_per_minute}"
+        }
+      ) {
+        value {
+          user_id
+        }
+      }
+    }`
+    
+    const headers = this.headers;
+    
+    const res = this.http.post<any>('https://95190683-5f68-44bf-a587-897c5b2e623e-us-east-2.apps.astra.datastax.com/api/graphql/entrance', body, {headers});
+    
+    return lastValueFrom(res);
   }
 
   async addNewUserMutation(user: User) {

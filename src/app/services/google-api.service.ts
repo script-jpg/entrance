@@ -90,6 +90,8 @@ export class GoogleApiService {
       this.oAuthService.loadUserProfile().then( (userProfile) => {
         console.log(userProfile as UserInfo)
         sessionStorage.setItem('userProfile', JSON.stringify(userProfile as UserInfo))
+        sessionStorage.setItem('user_id', userProfile['info']['sub'])
+        console.log('May 16 | user_id: ', sessionStorage.getItem('user_id'))
         this.userProfileSubject.next(userProfile as UserInfo)
       })
     }

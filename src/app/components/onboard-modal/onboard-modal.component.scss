@@ -1,7 +1,7 @@
 
   
   .body {
-    height: 90%;
+    height: 100%;
     border-radius: 20px;
     padding: 50px;
     background-color: #323259;
@@ -9,7 +9,15 @@
     margin-bottom: 1rem;
   }
 
+  #streamerSettings {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 
+  #cdk-overlay-1 {
+    left: 295px;
+  }
   
   .button-holder {
     display: flex;

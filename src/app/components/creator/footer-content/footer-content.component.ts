@@ -24,6 +24,7 @@ export class FooterContentComponent implements OnInit {
 
   streamerData: User | null = null;
   callConfirmed: boolean = false;
+  
 
   ngOnInit(): void {
 

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {GraphqlService} from '../../services/graphql.service';
 import {NbDialogRef, NbToastrService} from '@nebular/theme';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-onboard-modal',
@@ -11,8 +12,8 @@ export class OnboardModalComponent implements OnInit {
 
   platform_name: string = "";
   platform_id: string = "";
-  cooldown_time: string = "";
-  ppm: string = "";
+  cooldown_time: number = 30;
+  ppm: number;
 
   constructor(
     private graphqlService: GraphqlService, 
@@ -45,17 +46,22 @@ export class OnboardModalComponent implements OnInit {
     } else if (result.username === "") {
       this.toastrService.danger("","Please add a username")
     } else {
-      if (this.isStreamer) {
-        this.toastrService.success("", "Streamer Settings can be configured in settings")
-      }
       this.graphqlService.addNewUser(result.username, this.isStreamer, this.filePreview, 1).then((value: any) => {
+        
         console.log("success: " + value);
         this.graphqlService.queryUser(value, this.graphqlService.getUserData());
-
+        if (this.isStreamer) {
+          this.toastrService.success("", "Streamer Settings can be configured in settings")
+          this.graphqlService.addNewStreamerSettings(this.platform_name, this.platform_id, this.cooldown_time, this.ppm).then((value: any) => {
+            console.log("Added streamer settings for " + value);
+          });
+          this.graphqlService.queryUser(value, this.graphqlService.getStreamerData());
+        }
         this.dialogRef.close();
         // this.toastrService.success("","")
 
       });
+      
     }
  }
 

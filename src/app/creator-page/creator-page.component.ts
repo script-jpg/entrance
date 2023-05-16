@@ -28,7 +28,7 @@ export class CreatorPageComponent implements OnInit {
   getPlayerSrc(): string {
     let platform_id: string = "";
     if (this.streamerSettings != null) {
-      platform_id = this.streamerSettings.platform_id;
+      platform_id = this.streamerSettings.streamer_platform_id;
     }
     return "https://player.twitch.tv/?channel="+platform_id+"&parent=localhost";
   }
@@ -40,6 +40,8 @@ export class CreatorPageComponent implements OnInit {
       this.creator_id = creator_id
       localStorage.setItem("creator_id", creator_id);
     }
+
+    this.graphqlService.queryStreamerSettings(this.creator_id);
 
     console.log("creator_id: " + this.creator_id);
     this.graphqlService.getStreamerSettings().subscribe((value) => {
