@@ -23,6 +23,7 @@ import { HeaderContentComponent } from './components/creator/header-content/head
 import { CreatorPageComponent } from './creator-page/creator-page.component';
 import { VideoCallComponent } from './video-call/video-call.component';
 import { CallQueueUiComponent } from './call-queue-ui/call-queue-ui.component';
+import { TimerComponent } from './utils/timer/timer.component';
 
 
 
@@ -39,7 +40,8 @@ import { CallQueueUiComponent } from './call-queue-ui/call-queue-ui.component';
     CreatorPageComponent,
     SafePipe,
     VideoCallComponent,
-    CallQueueUiComponent
+    CallQueueUiComponent,
+    TimerComponent
   ],
   imports: [
     MatFormFieldModule,
