@@ -1,4 +1,12 @@
 <div class="body">
+    <nb-card  card-background-color="#ffffff" class="timer">
+        <nb-card-body>
+            <div class="layout" class="hide" [id]="remainingTime <= 15 || !isInviter ? 'show' : ''">
+                <p>Remaining Time: <app-timer [time]="20000" [functionToCall]="endCallFromApi" (timeChange)="remainingTime = $event"></app-timer>
+                </p>
+            </div>
+        </nb-card-body>
+      </nb-card> 
     
     
     <div class="footer">

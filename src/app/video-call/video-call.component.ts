@@ -10,6 +10,7 @@ import { WebsocketService } from '../services/websocket.service';
 import { Message } from '../types/message';
 import { User, GraphqlService } from '../services/graphql.service';
 import { BehaviorSubject } from 'rxjs';
+import { CallQueueService } from '../services/call-queue.service';
 
 export const ENV_RTCPeerConfiguration = environment.RTCPeerConfiguration;
 
@@ -70,7 +71,9 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
 
   private localStream: MediaStream = null;
 
-  private isInviter: boolean = false;
+  isInviter: boolean = false;
+
+  remainingTime: number;
 
   isLocalVideoActive(): boolean {
     return webcamActive || screenShareActive;
@@ -88,7 +91,8 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     private dataService: WebsocketService, 
     private route: ActivatedRoute,
     private router: Router,
-    private graphql: GraphqlService) { }
+    private graphql: GraphqlService,
+    private callQueueService: CallQueueService) { }
 
   ngOnInit(): void {
     this.user_profile_pic = localStorage.getItem('user_profile_pic');
@@ -221,6 +225,15 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
           console.log('unknown message of type ' + msg.msgType);
       }
     });
+  }
+
+  endCallFromApi(): void {
+    if (this.sender_id) {
+      this.callQueueService.endCall(this.sender_id);
+      this.hangUp();
+
+    }
+    
   }
 
   /* ########################  MESSAGE HANDLER  ################################## */

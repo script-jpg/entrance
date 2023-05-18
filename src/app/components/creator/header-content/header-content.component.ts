@@ -60,9 +60,7 @@ export class HeaderContentComponent implements OnInit {
     console.log("start stream");
     this.callQueueService.setCreatorOnline(localStorage.getItem('user_id'));
     // wait for 10 seconds
-    // setTimeout(() => {
-    //   this.router.navigate(['call/0']);
-    // }, 15000);
+    this.router.navigate(['call/0']);
 
   }
 
