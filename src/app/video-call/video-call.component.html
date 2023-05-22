@@ -27,14 +27,10 @@
         </div>
         
         <div class="button-container">
-            <!-- <button class="modern-button start-webcam" #webcamButton (click)="webcamHandler()" [disabled]="isScreenShareActive" [innerHTML]="(isWebCamActive) ? 'Stop Webcam' : 'Start Webcam'"></button>
-            <button #screenShareButton (click)="screenShareHandler()" [disabled]="screenShareDisabled">Start ScreenShare</button>
-            <button #muteButton (click)="mute()" [innerHTML]="muteInnerHTML"></button>
-            <button (click)="hangUp()" [disabled]="!inCall">HangUp</button> -->
-            <button class="modern-button start-webcam"><i class="fas fa-video"></i></button>
-            <button class="modern-button start-screenshare"><i class="fas fa-desktop"></i></button>
-            <button class="modern-button mute"><i class="fas fa-microphone-slash"></i></button>
-            <button class="modern-button end-call"><i class="fas fa-phone-slash"></i></button>
+            <button class="modern-button start-webcam" (click)="webcamHandler()" [disabled]="isScreenShareActive"><i class="fas fa-video"></i></button>
+            <button class="modern-button start-screenshare" (click)="screenShareHandler()" [disabled]="screenShareDisabled"><i class="fas fa-desktop"></i></button>
+            <button class="modern-button mute" (click)="mute()"><i class="fas fa-microphone-slash"></i></button>
+            <button class="modern-button end-call" (click)="hangUp()"><i class="fas fa-phone-slash"></i></button>
         </div>
 <!-- 
         <div class="local-video-container"> -->
