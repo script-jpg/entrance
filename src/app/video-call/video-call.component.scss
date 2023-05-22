@@ -49,6 +49,7 @@
     align-items: center;
     position: absolute;
     bottom: 3rem;
+    gap: 0.5rem;
 }
 
 .center {
@@ -105,4 +106,45 @@ button {
 
 .hide {
     display: none;
+}
+
+.timer {
+    background-color: #ffffff;
+}
+
+.modern-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    color: white;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modern-button:hover {
+    opacity: 0.8;
+}
+
+.modern-button i {
+    margin-right: 5px;
+}
+
+.start-webcam {
+    background-color: #323259; /* Green - indicating go/start */
+}
+
+.start-screenshare {
+    background-color: #323259; /* Blue - generally associated with sharing */
+}
+
+.mute {
+    background-color: #323259; /* Yellow - warning color, as mute is an alert function */
+}
+
+.end-call {
+    background-color: #f44336; /* Red - indicating stop/end */
 }
