@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { WebsocketService } from './websocket.service';
 import { Subject } from 'rxjs';
+import { Router } from '@angular/router';
 
 
 @Injectable({
@@ -24,7 +25,10 @@ export class CallQueueService {
     return this.confirmedCall.asObservable();
   }
 
-  constructor(private http: HttpClient, private webSocketService: WebsocketService) {
+  constructor(
+    private http: HttpClient, 
+    private webSocketService: WebsocketService,
+    private router: Router) {
     this.webSocketService.connect();
 
     this.webSocketService.getMessages().subscribe(msg => {
@@ -33,10 +37,11 @@ export class CallQueueService {
         console.log("Received call_start message");
         // wait 3 seconds for tesing purposes
 
-        setTimeout(() => {
-          console.log('Now ending call for testing purposes')
-          this.webSocketService.sendMessage({"action":"endCall","user_id":"user1","creator_id":"abc","cooldown_time":5});
-        }, 2000);
+        // setTimeout(() => {
+        //   console.log('Now ending call for testing purposes')
+        //   this.webSocketService.sendMessage({"action":"endCall","user_id":"user1","creator_id":"abc","cooldown_time":5});
+        // }, 2000);
+        router.navigate(['call/1']);
       } else if (msg.msgType=="updateQueuePosition") {
         console.log("Received updateQueuePosition message");
 
