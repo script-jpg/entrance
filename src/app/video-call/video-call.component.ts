@@ -16,7 +16,7 @@ export const ENV_RTCPeerConfiguration = environment.RTCPeerConfiguration;
 
 const mediaConstraints = {
   audio: true,
-  video: true
+  video: false
   // video: {width: 1280, height: 720} // 16:9
   // video: {width: 960, height: 540}  // 16:9
   // video: {width: 640, height: 480}  //  4:3
@@ -139,6 +139,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     this.requestMediaDevices().then(() => {
       // this.startWebcam();
       this.startLocalAudio();
+      
 
       if (this.isInviter) { //disallow calls if creator is not streaming
         console.log('isInviter is true')
@@ -155,6 +156,8 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
 
     console.log("in Call: ")
     console.log(this.localStream.getTracks());
+
+    
 
     // Add the tracks from the local stream to the RTCPeerConnection
     this.localStream.getTracks().forEach(
@@ -327,6 +330,8 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
   private async requestMediaDevices(): Promise<void> {
     try {
       this.localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+      
+      
       // pause all tracks
       this.pauseLocalVideo();
     } catch (e) {
@@ -344,10 +349,17 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     });
   }
 
-  webcamHandler(): void {
+  async webcamHandler(): Promise<void> {
     if (webcamActive) {
       this.pauseLocalVideo();
+      this.localStream.getTracks().forEach(track => {
+        if (track.kind === 'video') {
+          track.stop();
+        }
+      });
     } else {
+      mediaConstraints.video = true;
+      await this.requestMediaDevices();
       this.startWebcam();
     }
   }
