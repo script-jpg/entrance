@@ -14,7 +14,12 @@
         
         <div class="profile-pic-container">
             <div class="left box"  [ngClass]="{'center': !inCall}">
-                <img class="pfp" id="userProfilePic" *ngIf="!isLocalVideoActive()" [src]="user_profile_pic" alt="profile pic">
+                <img class="pfp" id="userProfilePic" *ngIf="!isLocalVideoActive() && !loadingCamera" [src]="user_profile_pic" alt="profile pic">
+                <div class="loading-dots" *ngIf="loadingCamera">
+                    <div class="loading-dot"></div>
+                    <div class="loading-dot"></div>
+                    <div class="loading-dot"></div>
+                </div>
                 <video #local_video id="localVideo" [style.display]="isLocalVideoActive() ? 'block' : 'none'" [autoplay]="true" [muted]="true"></video>
             </div>
             <div class="right box">

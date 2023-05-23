@@ -36,6 +36,8 @@ let webcamTrack;
 const onEndedChange = new BehaviorSubject(0);
 
 
+
+
 @Component({
   selector: 'app-video-call',
   templateUrl: './video-call.component.html',
@@ -46,6 +48,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
   targetUser: string = localStorage.getItem('creator_id');
   sender_id: string = localStorage.getItem('user_id');
   muteHTML: boolean = false;
+  loadingCamera: boolean = false;
 
   userData: User | null = null;
 
@@ -70,6 +73,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
   private peerConnection: RTCPeerConnection;
 
   private localStream: MediaStream = null;
+  private videoStream: MediaStream = null;
 
   isInviter: boolean = false;
 
@@ -106,6 +110,8 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
       console.log(user);
       this.remote_profile_pic = user.profile_pic;
     });
+
+    
 
     // we subscribe to onended change so we can call this.pauseLocalVideo() when the value is changed
     onEndedChange.subscribe((val: any) => {
@@ -330,10 +336,9 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
   private async requestMediaDevices(): Promise<void> {
     try {
       this.localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
-      
-      
-      // pause all tracks
-      this.pauseLocalVideo();
+      setTimeout(() => {
+        this.loadingCamera = false;
+      }, 1);
     } catch (e) {
       console.error(e);
       alert(`getUserMedia() error: ${e.name}`);
@@ -358,6 +363,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
         }
       });
     } else {
+      this.loadingCamera = true;
       mediaConstraints.video = true;
       await this.requestMediaDevices();
       this.startWebcam();
@@ -367,12 +373,8 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
   startWebcam(): void {
     console.log('starting local stream');
     console.log('showing tracks')
-    this.localStream.getTracks().forEach(track => {
-  
-      if (track.kind === 'video') {
-        console.log(track);
-        track.enabled = true;
-      }
+    this.localStream.getVideoTracks().forEach(track => {
+      track.enabled = true;
 
     });
     this.localVideo.nativeElement.srcObject = this.localStream;
