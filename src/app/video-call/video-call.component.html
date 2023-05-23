@@ -32,12 +32,19 @@
         </div>
         
         <div class="button-container">
-            <button class="modern-button start-webcam" (click)="webcamHandler()" [disabled]="isScreenShareActive"><i class="fas fa-video"></i></button>
-            <button class="modern-button start-screenshare" (click)="screenShareHandler()" [disabled]="screenShareDisabled"><i class="fas fa-desktop"></i></button>
+            <button class="modern-button start-webcam" (click)="webcamHandler()" [disabled]="isScreenShareActive" style="position: relative;">
+                <i class="fas fa-video" [ngStyle]="{'visibility': isWebCamActive ? 'hidden' : 'visible'}" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
+                <i class="fas fa-video-slash" [ngStyle]="{'visibility': isWebCamActive ? 'visible' : 'hidden'}" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
+            </button>
+            
+            <button class="modern-button start-screenshare" (click)="screenShareHandler()" [disabled]="screenShareDisabled" style="position: relative;">
+                <i class="fas fa-desktop" [ngStyle]="{'visibility': isScreenShareActive ? 'hidden' : 'visible'}" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
+                <i class="fas fa-desktop-slash" [ngStyle]="{'visibility': isScreenShareActive ? 'visible' : 'hidden'}" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
+            </button>
             <button class="modern-button mute" (click)="mute()" style="position: relative;">
                 <i class="fas fa-microphone" [ngStyle]="{'visibility': muteHTML ? 'hidden' : 'visible'}" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
                 <i class="fas fa-microphone-slash" [ngStyle]="{'visibility': muteHTML ? 'visible' : 'hidden'}" style="position: absolute; top: 50%; left: 46.75%; transform: translate(-50%, -50%);"></i>
-              </button>
+            </button>
             <button class="modern-button end-call" (click)="hangUp()"><i class="fas fa-phone-slash"></i></button>
         </div>
 <!-- 
