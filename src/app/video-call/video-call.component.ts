@@ -45,7 +45,7 @@ const onEndedChange = new BehaviorSubject(0);
 export class VideoCallComponent implements AfterViewInit, OnInit {
   targetUser: string = localStorage.getItem('creator_id');
   sender_id: string = localStorage.getItem('user_id');
-  muteInnerHTML: string = 'Mute';
+  muteHTML: boolean = false;
 
   userData: User | null = null;
 
@@ -594,7 +594,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
   mute(): void {
     this.localStream.getAudioTracks().forEach(track => {
       track.enabled = !track.enabled;
-      this.muteInnerHTML = track.enabled ? 'Mute' : 'Unmute';
+      this.muteHTML = !track.enabled;
     });
   }
 }

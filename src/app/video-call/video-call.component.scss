@@ -131,7 +131,9 @@ button {
 }
 
 .modern-button {
-    padding: 10px 20px;
+    width: 80px;    /* adjust as needed */
+    height: 50px;   /* adjust as needed */
+    padding-left: 2.5%;
     font-size: 16px;
     border: none;
     color: white;
@@ -141,6 +143,7 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
 }
 
 .modern-button:hover {
@@ -167,6 +170,8 @@ button {
     background-color: #f44336; /* Red - indicating stop/end */
 }
 
-i {
-    transform: translateX(3px);
+.modern-button i {
+    width: 20px;    /* adjust as needed */
+    height: 20px;   /* adjust as needed */
+    font-size: 20px;
 }
