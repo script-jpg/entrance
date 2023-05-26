@@ -11,6 +11,7 @@ import { Message } from '../types/message';
 import { User, GraphqlService } from '../services/graphql.service';
 import { BehaviorSubject } from 'rxjs';
 import { CallQueueService } from '../services/call-queue.service';
+import {GlobalDataService} from "../services/global-data.service";
 
 export const ENV_RTCPeerConfiguration = environment.RTCPeerConfiguration;
 
@@ -64,7 +65,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
   get screenShareDisabled(): boolean {
     return webcamActive || screenShareActive;
   }
-  
+
 
   @ViewChild('local_video') localVideo: ElementRef;
   @ViewChild('received_video') remoteVideo: ElementRef;
@@ -88,17 +89,22 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
 
 
   inCall = false;
-  
+
   remoteVideoActive = false;
+  call_time: number = 0;
 
   constructor(
-    private dataService: WebsocketService, 
+    private dataService: WebsocketService,
     private route: ActivatedRoute,
     private router: Router,
     private graphql: GraphqlService,
-    private callQueueService: CallQueueService) { }
+    private callQueueService: CallQueueService,
+    private globalDataService: GlobalDataService) { }
+
+
 
   ngOnInit(): void {
+    this.call_time = this.globalDataService.getGlobalDataByKey('call_time');
     this.user_profile_pic = localStorage.getItem('user_profile_pic');
     this.remote_profile_pic = localStorage.getItem('streamer_profile_pic');
 
@@ -111,7 +117,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
       this.remote_profile_pic = user.profile_pic;
     });
 
-    
+
 
     // we subscribe to onended change so we can call this.pauseLocalVideo() when the value is changed
     onEndedChange.subscribe((val: any) => {
@@ -126,7 +132,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
 
 
       // Works but ugly... fixes problem button status are not updated
-      this.muteButton.nativeElement.click(); 
+      this.muteButton.nativeElement.click();
       this.muteButton.nativeElement.click();
       // see if this refreshes the context
       // it does but not a great solution
@@ -145,7 +151,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     this.requestMediaDevices().then(() => {
       // this.startWebcam();
       this.startLocalAudio();
-      
+
 
       if (this.isInviter) { //disallow calls if creator is not streaming
         console.log('isInviter is true')
@@ -163,7 +169,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     console.log("in Call: ")
     console.log(this.localStream.getTracks());
 
-    
+
 
     // Add the tracks from the local stream to the RTCPeerConnection
     this.localStream.getTracks().forEach(
@@ -173,7 +179,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
         } catch (err) {
           console.log(err);
         }
-        
+
       }
     );
 
@@ -196,7 +202,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     console.log('hangup called');
     this.dataService.sendMessage({msgType: 'hangup', msg: '', sender_id: this.sender_id, user_id: this.targetUser, action: 'sendMessage'});
     this.closeVideoCall();
-    //go back to the creator page of the last creator you were on 
+    //go back to the creator page of the last creator you were on
     this.router.navigate(['user/'+this.targetUser]);
   }
 
@@ -238,11 +244,11 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
 
   endCallFromApi(): void {
     if (this.sender_id) {
-      this.callQueueService.endCall(this.sender_id);
+      this.callQueueService.endCall(this.sender_id, this.targetUser)
       this.hangUp();
 
     }
-    
+
   }
 
   /* ########################  MESSAGE HANDLER  ################################## */
@@ -267,7 +273,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     }
 
     if (!this.localStream) {
-      
+
       this.startWebcam();
     }
 
@@ -432,7 +438,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     // replace video track with screen share
     try {
       await this.requestScreenShare();
-      
+
 
       // add audio track to local stream
 
@@ -445,7 +451,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
       alert(`getDisplayMedia() error: ${e.name}`);
     }
 
-    
+
   }
 
   screenShareHandler(): void {
@@ -592,6 +598,7 @@ export class VideoCallComponent implements AfterViewInit, OnInit {
     console.log(event);
     this.remoteVideo.nativeElement.srcObject = event.streams[0];
   }
+
 
   mute(): void {
     this.localStream.getAudioTracks().forEach(track => {

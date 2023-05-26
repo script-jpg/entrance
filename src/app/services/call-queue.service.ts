@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable, OnInit} from '@angular/core';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -6,12 +6,14 @@ import { environment } from 'src/environments/environment';
 import { WebsocketService } from './websocket.service';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
+import {GlobalDataService} from "./global-data.service";
+
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class CallQueueService {
+export class CallQueueService implements OnInit{
 
   confirmedCall: Subject<boolean> = new Subject<boolean>();
 
@@ -28,13 +30,16 @@ export class CallQueueService {
   constructor(
     private http: HttpClient,
     private webSocketService: WebsocketService,
-    private router: Router) {
-
+    private router: Router,
+    private globalDataService: GlobalDataService) {
     this.webSocketService.getMessages().subscribe(msg => {
       console.log("Received message: " + JSON.stringify(msg));
       if (msg.msgType == "call_start") {
         console.log("Received call_start message");
-        router.navigate(['call/1']);
+        console.log(msg);
+        const time_in_milliseconds: number = msg.length*60000;
+        this.globalDataService.addGlobalData('call_time', time_in_milliseconds);
+        this.router.navigate(['call/1']);
       } else if (msg.msgType=="updateQueuePosition") {
         console.log("Received updateQueuePosition message");
 
@@ -44,9 +49,12 @@ export class CallQueueService {
       }
     });
 
+
+
   }
 
   ngOnInit(): void {
+
 
   }
 
@@ -73,7 +81,6 @@ export class CallQueueService {
 
 
   public buyCall(creator_id: string, user_id: string, price: number, length: number): void {
-    this.webSocketService.connect();
     this.confirmedCall.next(true);
     const data = {"action":"buyCall","user_id":user_id,"creator_id":creator_id,"price":price,"length_in_minutes":length}
 
@@ -81,12 +88,12 @@ export class CallQueueService {
 
   }
 
-  public endCall(creator_id: string): void {
+  public endCall(creator_id: string, user_id: string): void {
     const data = {
       "action": "endCall",
       "creator_id": creator_id,
       // "user_id": localStorage.getItem('user_id')
-      "user_id":"user1"
+      "user_id":user_id
     }
 
     this.webSocketService.sendMessage(data);

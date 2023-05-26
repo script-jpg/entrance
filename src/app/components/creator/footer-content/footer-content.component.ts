@@ -6,6 +6,7 @@ import { AuthModalComponent } from '../../auth-modal/auth-modal.component';
 import { GoogleApiService, UserInfo } from 'src/app/services/google-api.service';
 import { GraphqlService, User } from 'src/app/services/graphql.service';
 import { CallQueueService } from 'src/app/services/call-queue.service';
+import {WebsocketService} from "../../../services/websocket.service";
 
 @Component({
   selector: 'app-footer-content',
@@ -24,9 +25,25 @@ export class FooterContentComponent implements OnInit {
 
   streamerData: User | null = null;
   callConfirmed: boolean = false;
-  
+
+  callTime: number = 0;
+
 
   ngOnInit(): void {
+    localStorage.setItem("creator_id",this.creator_id);
+
+    this.webSocketService.connect();
+
+
+    this.subscription = this.uiService
+      .onToggle()
+      .subscribe((value) => {this.buyCallActive = value;});
+
+    // update isLoggedIn when userProfile is recieved
+    this.googleApi.userProfileSubject.subscribe((userProfile) => {
+      this.isLoggedIn = userProfile.info != null;
+      console.log("isLoggedIn: " + this.isLoggedIn);
+    });
 
     this.graphql.getStreamerData().subscribe((streamerData) => {
       this.streamerData = streamerData;
@@ -40,34 +57,25 @@ export class FooterContentComponent implements OnInit {
 
   }
 
-  constructor(private uiService: UiService, 
+  constructor(private uiService: UiService,
     private dialogService: NbDialogService,
-    googleApi: GoogleApiService,
+    private googleApi: GoogleApiService,
     private graphql: GraphqlService,
-    private callQueueService: CallQueueService) {
-      localStorage.setItem("creator_id",this.creator_id);
+    private callQueueService: CallQueueService, private webSocketService: WebsocketService) {
 
-      
-    this.subscription = this.uiService
-      .onToggle()
-      .subscribe((value) => {this.buyCallActive = value;});
-    
-    // update isLoggedIn when userProfile is recieved
-    googleApi.userProfileSubject.subscribe((userProfile) => {
-      this.isLoggedIn = userProfile.info != null;
-      console.log("isLoggedIn: " + this.isLoggedIn);
-    });
   }
 
 
 
 
 
-  
+
+
+
 
   onBuyCall() {
     this.uiService.toggleSetupBuyCall();
-    
+
   }
 
   protected open(closeOnEsc: boolean) {
@@ -78,6 +86,6 @@ export class FooterContentComponent implements OnInit {
     this.isSigningIn = true;
     this.open(true);
   }
-    
+
 }
 
