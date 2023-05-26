@@ -43,7 +43,9 @@ export class SetupBuyCallComponent implements OnInit {
   onConfirmBuyCall() {
     // this.router.navigate(['call/1']);
     console.log('Sending buy call request');
-    this.callQueueService.buyCall("abc","user1", this.cost, this.minutes);
+    console.log("creator_id: "+localStorage.getItem("creator_id"));
+    console.log("user_id: "+localStorage.getItem("user_id"));
+    this.callQueueService.buyCall(localStorage.getItem("creator_id"),localStorage.getItem("user_id"), this.cost, this.minutes);
   }
 
 }

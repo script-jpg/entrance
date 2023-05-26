@@ -8,7 +8,7 @@ import { CallQueueService } from '../services/call-queue.service';
 })
 export class CallQueueUiComponent implements OnInit {
 
-  callQueue: any[] = [{"user_id":"user4","price_per_minute":30,"aggregate_call_length":1,"rank":1},{"user_id":"user1","price_per_minute":30,"aggregate_call_length":2,"rank":2},{"user_id":"user3","price_per_minute":25,"aggregate_call_length":3,"rank":3}];
+  callQueue: any[] = [];
 
   sliderValue: number = 50; // default value
 
@@ -30,7 +30,10 @@ export class CallQueueUiComponent implements OnInit {
   }
 
   resubmitPPM() {
-    this.callQueueService.buyCall("abc","user1", this.sliderValue, 1);
+    console.log("resubmitting ppm");
+    console.log("creator_id: "+localStorage.getItem("creator_id"));
+    console.log("user_id: "+localStorage.getItem("user_id"));
+    this.callQueueService.buyCall(localStorage.getItem("creator_id"),localStorage.getItem("user_id"), this.sliderValue, 1);
     
   }
 

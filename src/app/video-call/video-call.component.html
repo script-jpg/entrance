@@ -7,11 +7,11 @@
                 </p>
             </div>
         </nb-card-body>
-      </nb-card> 
-    
-    
+      </nb-card>
+
+
     <div class="footer">
-        
+
         <div class="profile-pic-container">
             <div class="left box"  [ngClass]="{'center': !inCall}">
                 <img class="pfp" id="userProfilePic" *ngIf="!isLocalVideoActive() && !loadingCamera" [src]="user_profile_pic" alt="profile pic">
@@ -25,18 +25,18 @@
             <div class="right box">
                 <img class="pfp" id="creatorProfilePic" *ngIf="inCall && !remoteVideoActive" [src]="remote_profile_pic" alt="profile pic">
                 <video #received_video id="localVideo" [style.display]="inCall && remoteVideoActive ? 'block' : 'none'" [autoplay]="true"></video>
-                
+
             </div>
-            
-            
+
+
         </div>
-        
+
         <div class="button-container">
             <button class="modern-button start-webcam" (click)="webcamHandler()" [disabled]="isScreenShareActive" style="position: relative;">
                 <i class="fas fa-video" [ngStyle]="{'visibility': isWebCamActive ? 'hidden' : 'visible'}" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
                 <i class="fas fa-video-slash" [ngStyle]="{'visibility': isWebCamActive ? 'visible' : 'hidden'}" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
             </button>
-            
+
             <button class="modern-button start-screenshare" (click)="screenShareHandler()" [disabled]="screenShareDisabled" style="position: relative;">
                 <i class="fas fa-desktop" [ngStyle]="{'visibility': isScreenShareActive ? 'hidden' : 'visible'}" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
                 <i class="fas fa-desktop-slash" [ngStyle]="{'visibility': isScreenShareActive ? 'visible' : 'hidden'}" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></i>
@@ -47,15 +47,15 @@
             </button>
             <button class="modern-button end-call" (click)="hangUp()"><i class="fas fa-phone-slash"></i></button>
         </div>
-<!-- 
+<!--
         <div class="local-video-container"> -->
-        
+
         <!-- </div> -->
-        
-        
+
+
 
     </div>
-</div> 
+</div>
 
 
 
@@ -73,4 +73,4 @@
     <button (click)="hangUp()" [disabled]="!inCall">HangUp</button>
 </div> -->
 
-  
+

@@ -65,10 +65,10 @@
 
 //profile-pic-container in bottom left corner
 .profile-pic-container {
-    gap: 0.5rem;
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: center;
+    gap: 2rem;
     width: 100vw;
     height: 30rem;
 }
@@ -128,6 +128,7 @@ button {
 
 .timer {
     color: white;
+    background-color: rgb(24, 24, 44);
 }
 
 .modern-button {
@@ -183,7 +184,7 @@ button {
     20% { opacity: 1; }
     100% { opacity: .2; }
   }
-  
+
   .loading-dot {
     animation: loading 1s infinite;
     height: 10px;
@@ -193,11 +194,11 @@ button {
     display: inline-block;
     margin: 0 2px;
   }
-  
+
   .loading-dot:nth-child(2) {
     animation-delay: 0.2s;
   }
-  
+
   .loading-dot:nth-child(3) {
     animation-delay: 0.4s;
   }
@@ -206,13 +207,26 @@ button {
   .image-container {
     position: relative;
   }
-  
+
   .loading-dots {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: rotate(-90deg) translateY(-1rem) translateX(1rem); 
+    transform: rotate(-90deg) translateY(-1rem) translateX(1rem);
     /* Make sure the loading animation is above the image */
     z-index: 1;
   }
-  
+
+  nb-card {
+    margin: 0;
+    padding: 0;
+    position:absolute;
+    top: 12.5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  nb-card-body {
+    margin: 0;
+    padding: 0;
+  }

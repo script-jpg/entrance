@@ -13,15 +13,15 @@ import { Subject, Observable } from 'rxjs';
 
 export class WebsocketService {
   // private user_id: string = localStorage.getItem('user_id');
-  private user_id: string = "user1";
+  private user_id: string = localStorage.getItem('user_id');
   private socket$: WebSocketSubject<any>;
   private messagesSubject: Subject<any> = new Subject<any>();
 
   getMessages(): Observable<any> {
     return this.messagesSubject.asObservable();
   }
-  
-  constructor() { 
+
+  constructor() {
   }
 
   public connect(): void {
@@ -45,21 +45,6 @@ export class WebsocketService {
   sendMessage(message: any): void {
     console.log('Sending message of type: ' + message.msgType)
     this.socket$.next(message);
-  }
-
-  public sendBuyCallRequest(creator_id: string, price: number, length: number): void {
-    const data = {
-      "action": "buyCall",
-      "creator_id": "abc",
-      // "user_id": localStorage.getItem('user_id'),
-      "user_id":"user1",
-      "price": price,
-      "length_in_minutes": length
-    }
-    
-    // this.postData(environment.buyCallLink, data).subscribe(this.postDataObserver);
-    this.sendMessage(data);
-    
   }
 
   public getNewWebSocket(): WebSocketSubject<any> {
