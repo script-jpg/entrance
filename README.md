@@ -5,13 +5,13 @@
 Entrance is an app that allows paid timed voice calls between creators and their fans. It aims to create enriched creator-fan interactions and provide a new source of revenue for creators.
 
 
-Here is a video demo: https://www.youtube.com/watch?v=6ROs4eP9EOg. It does not include the WebRTC calling component or the call queue component. Note that this code now lacks a back-end and will therefore not work when building unless you provide your own backend.
+Here is a video demo: https://www.youtube.com/watch?v=6ROs4eP9EOg. It does not include the WebRTC calling component or the call queue component in the video since it was not implemented at the time. Note that this code now lacks a back-end and will therefore not work when building unless you provide your own backend.
 
 # Additional Notes
 
 This is the front-end for a prototype that was discontinued because of its dependence on a streaming platform. A newer version that is streaming platform agnostic is currently in the works.
 This version also suffers from a lack of a back-end. As a result, much of the information is stored on localStorage which can lead to breaches of sensitive information. As a result,
-this version of the front-end application is being discontinued and can serve as a testament of my front-end capabilities as a developer. Note that all the code was written by me.
+this version of the front-end application is being discontinued and can serve as a testament of my front-end capabilities as a developer. **Note that all the code was written by me.**
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.2.1.
 
